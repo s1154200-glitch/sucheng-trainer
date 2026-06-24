@@ -368,15 +368,32 @@
       animation: shake 420ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
     }
 
+    .hero.answer-mode {
+      grid-template-rows: auto 0 minmax(0, 1fr) auto;
+      gap: 6px;
+    }
+
+    .hero.answer-mode + .keyboard {
+      display: none;
+    }
+
+    .hero.answer-mode .study-strip {
+      min-height: 0;
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
     .hero.answer-mode .character-card {
-      gap: 10px;
+      gap: 6px;
     }
 
     .hero.answer-mode .character-stage {
       align-items: start;
       overflow-y: auto;
       overscroll-behavior: contain;
-      padding: 6px 0 12px;
+      padding: 4px 0 10px;
       scrollbar-width: none;
     }
 
@@ -385,13 +402,17 @@
     }
 
     .hero.answer-mode .word-wrap {
-      width: 124px;
-      height: 76px;
-      border-radius: 20px;
+      width: 94px;
+      height: 54px;
+      border-radius: 16px;
     }
 
     .hero.answer-mode .word {
-      font-size: 64px;
+      font-size: 46px;
+    }
+
+    .hero.answer-mode .prompt-meta {
+      font-size: 12px;
     }
 
     .hero.answer-mode .buffer-label,
@@ -502,7 +523,7 @@
     }
 
     .answer-line.show {
-      height: clamp(232px, 34dvh, 292px);
+      height: clamp(336px, 50dvh, 440px);
       opacity: 1;
       transform: translateY(0);
     }
@@ -511,7 +532,7 @@
       min-width: 0;
       height: 100%;
       display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
       gap: 7px;
       padding: 8px;
       border-radius: 16px;
@@ -567,6 +588,7 @@
       min-height: 0;
       display: grid;
       place-items: center;
+      align-self: stretch;
       border-radius: 13px;
       background: #ffffff;
       box-shadow: inset 0 0 0 1px rgba(21, 32, 43, 0.08);
@@ -574,8 +596,10 @@
     }
 
     .answer-card-img {
-      width: 100%;
-      height: 100%;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
       object-fit: contain;
       display: block;
       user-select: none;
@@ -860,7 +884,7 @@
       }
 
       .answer-line.show {
-        height: clamp(212px, 33dvh, 246px);
+        height: clamp(320px, 52dvh, 410px);
       }
 
       .answer-card {
@@ -873,12 +897,12 @@
       }
 
       .hero.answer-mode .word-wrap {
-        width: 108px;
-        height: 62px;
+        width: 86px;
+        height: 48px;
       }
 
       .hero.answer-mode .word {
-        font-size: 52px;
+        font-size: 40px;
       }
 
       .keyboard {
