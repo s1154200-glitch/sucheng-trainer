@@ -251,6 +251,35 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    .menu-button {
+      width: 100%;
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+      padding: 0 12px;
+      border-radius: 16px;
+      background: rgba(31, 122, 140, 0.1);
+      color: var(--brand-dark);
+      box-shadow: inset 0 0 0 1px rgba(31, 122, 140, 0.16);
+      font-size: 13px;
+      font-weight: 950;
+      transition: transform 150ms ease, background 150ms ease;
+    }
+
+    .menu-button svg {
+      width: 17px;
+      height: 17px;
+      stroke-width: 2.3;
+    }
+
+    .menu-button:active {
+      transform: scale(0.98) translateY(1px);
+      background: rgba(31, 122, 140, 0.15);
+    }
+
     .reset-button {
       width: 100%;
       min-height: 46px;
@@ -270,6 +299,176 @@
     .reset-button:active {
       transform: scale(0.98) translateY(1px);
       background: rgba(232, 75, 95, 0.15);
+    }
+
+    .record-panel {
+      position: absolute;
+      z-index: 10;
+      inset: 0;
+      display: grid;
+      align-items: end;
+      background: rgba(17, 21, 27, 0.42);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+
+    .record-panel.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .record-sheet {
+      max-height: min(76dvh, 650px);
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 12px;
+      padding: 16px 14px calc(env(safe-area-inset-bottom) + 16px);
+      border-radius: 26px 26px 0 0;
+      background: rgba(248, 250, 252, 0.98);
+      box-shadow: 0 -22px 50px rgba(16, 23, 31, 0.24);
+      transform: translateY(16px);
+      transition: transform 180ms ease;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .record-panel.show .record-sheet {
+      transform: translateY(0);
+    }
+
+    .record-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .record-title {
+      margin: 0;
+      color: #17202b;
+      font-size: 17px;
+      line-height: 1.1;
+      font-weight: 950;
+    }
+
+    .record-subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .record-close {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      background: #17202b;
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(16, 23, 31, 0.16);
+    }
+
+    .record-close svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.5;
+    }
+
+    .record-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .record-stat {
+      min-width: 0;
+      padding: 8px 6px;
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px var(--line);
+      text-align: center;
+    }
+
+    .record-stat strong,
+    .record-stat span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .record-stat strong {
+      color: #17202b;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .record-stat span {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 850;
+    }
+
+    .record-table-wrap {
+      min-height: 0;
+      overflow: auto;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .record-table {
+      width: 100%;
+      min-width: 690px;
+      border-collapse: collapse;
+      color: #17202b;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+
+    .record-table th,
+    .record-table td {
+      padding: 10px 9px;
+      border-bottom: 1px solid rgba(21, 32, 43, 0.08);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .record-table th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #eef3f7;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .record-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .record-char {
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .record-empty {
+      padding: 28px 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 850;
+      text-align: center;
     }
 
     .study-strip {
@@ -957,6 +1156,17 @@
                   <option value="50">50</option>
                 </select>
               </label>
+              <button id="recordButton" class="menu-button" type="button">
+                <span>學習記錄</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 6h13"></path>
+                  <path d="M8 12h13"></path>
+                  <path d="M8 18h13"></path>
+                  <path d="M3 6h.01"></path>
+                  <path d="M3 12h.01"></path>
+                  <path d="M3 18h.01"></path>
+                </svg>
+              </button>
               <button id="resetProgressButton" class="reset-button" type="button">重設學習紀錄</button>
             </div>
           </div>
@@ -997,6 +1207,24 @@
       <section id="keyboard" class="keyboard" aria-label="速成虛擬鍵盤">
         <div id="keyHint" class="key-hint" aria-live="polite"></div>
       </section>
+    </section>
+    <section id="recordPanel" class="record-panel" aria-hidden="true">
+      <div class="record-sheet" role="dialog" aria-modal="true" aria-labelledby="recordTitle">
+        <div class="record-header">
+          <div>
+            <h2 id="recordTitle" class="record-title">學習記錄</h2>
+            <div id="recordSubtitle" class="record-subtitle">已學 0 個單字</div>
+          </div>
+          <button id="recordCloseButton" class="record-close" type="button" aria-label="關閉學習記錄">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="recordSummary" class="record-summary" aria-live="polite"></div>
+        <div id="recordTableWrap" class="record-table-wrap"></div>
+      </div>
     </section>
   </main>
 
@@ -1058,7 +1286,13 @@
     const settingsButton = document.getElementById("settingsButton");
     const settingsMenu = document.getElementById("settingsMenu");
     const dailyLimitSelect = document.getElementById("dailyLimit");
+    const recordButton = document.getElementById("recordButton");
     const resetProgressButton = document.getElementById("resetProgressButton");
+    const recordPanel = document.getElementById("recordPanel");
+    const recordCloseButton = document.getElementById("recordCloseButton");
+    const recordSubtitle = document.getElementById("recordSubtitle");
+    const recordSummary = document.getElementById("recordSummary");
+    const recordTableWrap = document.getElementById("recordTableWrap");
     const memoryText = document.getElementById("memoryText");
 
     let settings = loadSettings();
@@ -1284,6 +1518,105 @@
       memoryText.textContent = `新字 ${today.introduced.length}/${settings.dailyLimit} · 複習 ${dueCount} · 已學 ${learnedCount}`;
     }
 
+    function formatDateTime(time) {
+      if (!time) return "未排程";
+      const date = new Date(time);
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hour = String(date.getHours()).padStart(2, "0");
+      const minute = String(date.getMinutes()).padStart(2, "0");
+      return `${month}/${day} ${hour}:${minute}`;
+    }
+
+    function percent(value) {
+      return `${Math.round(value * 100)}%`;
+    }
+
+    function learningRows() {
+      return DICTIONARY
+        .map((item) => ({ item, memory: progress.learned[item.char] }))
+        .filter(({ memory }) => memory && memory.seen > 0)
+        .sort((a, b) => {
+          const wrongDiff = (b.memory.wrong || 0) - (a.memory.wrong || 0);
+          if (wrongDiff) return wrongDiff;
+          return (b.memory.lastSeen || 0) - (a.memory.lastSeen || 0) || a.item.rank - b.item.rank;
+        });
+    }
+
+    function renderRecordPanel() {
+      const rows = learningRows();
+      const totalSeen = rows.reduce((sum, row) => sum + (row.memory.seen || 0), 0);
+      const totalCorrect = rows.reduce((sum, row) => sum + (row.memory.correct || 0), 0);
+      const totalWrong = rows.reduce((sum, row) => sum + (row.memory.wrong || 0), 0);
+      const dueCount = countDueReviews();
+
+      recordSubtitle.textContent = `已學 ${rows.length} 個單字 · 今日新字 ${dailyRecord().introduced.length}/${settings.dailyLimit}`;
+      recordSummary.innerHTML = `
+        <div class="record-stat"><strong>${rows.length}</strong><span>已學單字</span></div>
+        <div class="record-stat"><strong>${totalSeen}</strong><span>練習次數</span></div>
+        <div class="record-stat"><strong>${percent(totalCorrect / Math.max(1, totalCorrect + totalWrong))}</strong><span>總正確率</span></div>
+        <div class="record-stat"><strong>${dueCount}</strong><span>待複習</span></div>
+      `;
+
+      if (!rows.length) {
+        recordTableWrap.innerHTML = `<div class="record-empty">完成一次練習後，這裡會顯示每個單字的學習次數、正確次數、錯誤次數和下次複習時間。</div>`;
+        return;
+      }
+
+      const body = rows.map(({ item, memory }) => {
+        const attempts = memory.seen || 0;
+        const correct = memory.correct || 0;
+        const wrong = memory.wrong || 0;
+        const rate = percent(correct / Math.max(1, correct + wrong));
+        return `
+          <tr>
+            <td><span class="record-char">${item.char}</span></td>
+            <td>#${item.rank}</td>
+            <td>${item.head}${item.tail}</td>
+            <td>${attempts}</td>
+            <td>${correct}</td>
+            <td>${wrong}</td>
+            <td>${rate}</td>
+            <td>${memory.streak || 0}</td>
+            <td>${formatDateTime(memory.nextReview)}</td>
+          </tr>
+        `;
+      }).join("");
+
+      recordTableWrap.innerHTML = `
+        <table class="record-table">
+          <thead>
+            <tr>
+              <th>單字</th>
+              <th>Rank</th>
+              <th>碼</th>
+              <th>次數</th>
+              <th>正確</th>
+              <th>錯誤</th>
+              <th>正確率</th>
+              <th>連勝</th>
+              <th>下次複習</th>
+            </tr>
+          </thead>
+          <tbody>${body}</tbody>
+        </table>
+      `;
+    }
+
+    function setRecordPanel(open) {
+      if (open) {
+        renderRecordPanel();
+        closeSettingsMenu();
+      }
+
+      recordPanel.classList.toggle("show", open);
+      recordPanel.setAttribute("aria-hidden", open ? "false" : "true");
+    }
+
+    function closeRecordPanel() {
+      setRecordPanel(false);
+    }
+
     function setSettingsMenu(open) {
       settingsMenu.classList.toggle("show", open);
       settingsMenu.setAttribute("aria-hidden", open ? "false" : "true");
@@ -1303,6 +1636,7 @@
       answered = 0;
       saveProgress();
       closeSettingsMenu();
+      closeRecordPanel();
       rebuildSession();
     }
 
@@ -1334,6 +1668,7 @@
       const memory = memoryFor(question.char);
       scheduleReview(memory, correct, usedHint);
       updateMemoryText();
+      if (recordPanel.classList.contains("show")) renderRecordPanel();
     }
 
     function reinforceSoon(question) {
@@ -1371,7 +1706,7 @@
     }
 
     function auxiliaryCardSrc(letter) {
-      return `輔助字型/${letter}.png`;
+      return `assets/auxiliary-cards/${letter}.png`;
     }
 
     function hasAuxiliaryCard(letter) {
@@ -1659,6 +1994,19 @@
       event.stopPropagation();
     });
 
+    recordButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setRecordPanel(true);
+    });
+
+    recordPanel.addEventListener("click", closeRecordPanel);
+
+    recordPanel.querySelector(".record-sheet").addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    recordCloseButton.addEventListener("click", closeRecordPanel);
+
     dailyLimitSelect.addEventListener("change", () => {
       settings.dailyLimit = Number(dailyLimitSelect.value) || 10;
       saveSettings();
@@ -1675,6 +2023,7 @@
 
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
+        closeRecordPanel();
         closeSettingsMenu();
         hideKeyHint();
         return;
