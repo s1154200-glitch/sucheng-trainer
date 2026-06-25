@@ -51,6 +51,9 @@
       border: 0;
       font: inherit;
       -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
       touch-action: manipulation;
       user-select: none;
       cursor: pointer;
@@ -127,29 +130,6 @@
       color: var(--muted);
       font-size: 12px;
       font-weight: 700;
-    }
-
-    .score-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      min-width: 82px;
-      justify-content: center;
-      padding: 8px 11px;
-      border-radius: 999px;
-      background: #17202b;
-      color: #f7fafc;
-      font-size: 13px;
-      font-weight: 850;
-      box-shadow: 0 9px 20px rgba(16, 23, 31, 0.2);
-    }
-
-    .score-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--amber);
-      box-shadow: 0 0 0 4px rgba(239, 181, 67, 0.2);
     }
 
     .top-actions {
@@ -475,6 +455,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       min-width: 0;
     }
 
@@ -497,6 +478,37 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .study-strip.learn-more-ready .memory-chip {
+      justify-content: flex-start;
+    }
+
+    .learn-more-button {
+      flex: 0 0 auto;
+      min-height: 34px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(31, 122, 140, 0.12);
+      color: var(--brand-dark);
+      box-shadow: inset 0 0 0 1px rgba(31, 122, 140, 0.18);
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 950;
+      white-space: nowrap;
+      transition: transform 150ms ease, background 150ms ease;
+    }
+
+    .learn-more-button.show {
+      display: inline-flex;
+    }
+
+    .learn-more-button:active {
+      transform: scale(0.97) translateY(1px);
+      background: rgba(31, 122, 140, 0.18);
     }
 
     .character-stage {
@@ -747,40 +759,15 @@
       color: var(--tail);
     }
 
-    .answer-card-header {
-      min-width: 0;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
     .answer-label {
+      min-width: 0;
       font-size: 12px;
       line-height: 1.2;
       color: var(--muted);
       font-weight: 850;
-    }
-
-    .answer-code {
-      flex: 0 0 auto;
-      padding: 4px 7px;
-      border-radius: 999px;
-      background: rgba(21, 32, 43, 0.08);
-      color: #17202b;
-      font-size: 12px;
-      line-height: 1.1;
-      font-weight: 900;
-    }
-
-    .answer-card.head .answer-code {
-      background: rgba(232, 75, 95, 0.12);
-      color: var(--danger);
-    }
-
-    .answer-card.tail .answer-code {
-      background: rgba(24, 182, 108, 0.12);
-      color: var(--tail);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .answer-card-img-wrap {
@@ -856,6 +843,10 @@
         #dce4ec;
       border-top: 1px solid rgba(21, 32, 43, 0.08);
       box-shadow: 0 -14px 32px rgba(25, 40, 55, 0.08);
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
     }
 
     .key-hint {
@@ -943,6 +934,10 @@
         0 3px 0 var(--key-deep),
         0 8px 16px rgba(25, 40, 55, 0.13);
       transition: transform 92ms ease, box-shadow 92ms ease, background 120ms ease;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
     }
 
     .key:active,
@@ -961,6 +956,10 @@
       font-size: 18px;
       line-height: 1;
       font-weight: 950;
+      pointer-events: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .key-root {
@@ -970,6 +969,10 @@
       font-size: 11px;
       line-height: 1;
       font-weight: 850;
+      pointer-events: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     @keyframes wordIn {
@@ -1090,8 +1093,7 @@
         height: 100%;
       }
 
-      .answer-label,
-      .answer-code {
+      .answer-label {
         font-size: 11px;
       }
 
@@ -1134,10 +1136,6 @@
             <div class="subtitle">頭碼 · 尾碼</div>
           </div>
           <div class="top-actions">
-            <div class="score-pill" aria-live="polite">
-              <span class="score-dot"></span>
-              <span id="scoreText">0 / 0</span>
-            </div>
             <button id="settingsButton" class="icon-button" type="button" aria-label="設定" aria-expanded="false" aria-controls="settingsMenu">
               <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3.2"></circle>
@@ -1174,13 +1172,14 @@
 
         <div class="study-strip">
           <div id="memoryText" class="memory-chip" aria-live="polite">新字 0 · 複習 0</div>
+          <button id="learnMoreButton" class="learn-more-button" type="button">學更多新字</button>
         </div>
 
         <section class="character-stage">
           <div class="character-card">
             <div class="prompt-meta">
               <span class="round-mark"></span>
-              <span id="roundText">第 1 題</span>
+              <span id="roundText">今日已練 0 次</span>
             </div>
 
             <div class="word-wrap" aria-live="polite">
@@ -1281,7 +1280,6 @@
     const keyHintEl = document.getElementById("keyHint");
     const hintButton = document.getElementById("hintButton");
     const deleteButton = document.getElementById("deleteButton");
-    const scoreText = document.getElementById("scoreText");
     const roundText = document.getElementById("roundText");
     const settingsButton = document.getElementById("settingsButton");
     const settingsMenu = document.getElementById("settingsMenu");
@@ -1293,7 +1291,9 @@
     const recordSubtitle = document.getElementById("recordSubtitle");
     const recordSummary = document.getElementById("recordSummary");
     const recordTableWrap = document.getElementById("recordTableWrap");
+    const studyStrip = document.querySelector(".study-strip");
     const memoryText = document.getElementById("memoryText");
+    const learnMoreButton = document.getElementById("learnMoreButton");
 
     let settings = loadSettings();
     let progress = loadProgress();
@@ -1390,9 +1390,15 @@
 
     function dailyRecord() {
       const key = todayKey();
-      if (!progress.daily[key]) progress.daily[key] = { introduced: [] };
+      if (!progress.daily[key]) progress.daily[key] = { introduced: [], practiceCount: 0, bonusLimit: 0 };
       if (!Array.isArray(progress.daily[key].introduced)) {
         progress.daily[key].introduced = [];
+      }
+      if (!Number.isFinite(progress.daily[key].practiceCount)) {
+        progress.daily[key].practiceCount = 0;
+      }
+      if (!Number.isFinite(progress.daily[key].bonusLimit)) {
+        progress.daily[key].bonusLimit = 0;
       }
       return progress.daily[key];
     }
@@ -1420,10 +1426,31 @@
       const memory = progress.learned[item.char];
       if (!memory) return 1;
       const dueBoost = memory.nextReview <= now ? 2 : 0;
+      const lowLevelBoost = Math.max(0, 3 - (memory.level || 0));
       const wrongRate = memory.wrong / Math.max(1, memory.seen);
       const weakBoost = Math.min(5, Math.max(0, memory.wrong - memory.correct + 1) + Math.ceil(wrongRate * 3));
       const recencyPenalty = now - (memory.lastSeen || 0) < 10 * 60 * 1000 ? 0.65 : 1;
-      return Math.max(1, Math.round((1 + dueBoost + weakBoost) * recencyPenalty));
+      return Math.max(1, Math.round((1 + dueBoost + lowLevelBoost + weakBoost) * recencyPenalty));
+    }
+
+    function reviewPriority(a, b, now = Date.now()) {
+      const aMemory = a.memory;
+      const bMemory = b.memory;
+      const aDue = aMemory.nextReview <= now ? 1 : 0;
+      const bDue = bMemory.nextReview <= now ? 1 : 0;
+      if (aDue !== bDue) return bDue - aDue;
+
+      const levelDiff = (aMemory.level || 0) - (bMemory.level || 0);
+      if (levelDiff) return levelDiff;
+
+      const aWrongRate = (aMemory.wrong || 0) / Math.max(1, aMemory.seen || 0);
+      const bWrongRate = (bMemory.wrong || 0) / Math.max(1, bMemory.seen || 0);
+      if (aWrongRate !== bWrongRate) return bWrongRate - aWrongRate;
+
+      const wrongDiff = (bMemory.wrong || 0) - (aMemory.wrong || 0);
+      if (wrongDiff) return wrongDiff;
+
+      return (aMemory.nextReview || 0) - (bMemory.nextReview || 0) || a.item.rank - b.item.rank;
     }
 
     function shuffle(items) {
@@ -1448,6 +1475,20 @@
       return result;
     }
 
+    function interleaveNewItems(reviewItems, newItems) {
+      const result = [];
+      const newQueue = [...newItems];
+
+      reviewItems.forEach((itemIndex, position) => {
+        result.push(itemIndex);
+        if ((position + 1) % 2 === 0 && newQueue.length) {
+          result.push(newQueue.shift());
+        }
+      });
+
+      return [...result, ...newQueue];
+    }
+
     function createQuestionOrder() {
       const requestedChar = new URLSearchParams(window.location.search).get("char");
       const requestedIndex = DICTIONARY.findIndex((item) => item.char === requestedChar);
@@ -1456,21 +1497,18 @@
       const today = dailyRecord();
       const introduced = new Set(today.introduced);
 
-      const dueReview = DICTIONARY
+      const learnedReview = DICTIONARY
         .map((item, itemIndex) => ({ item, itemIndex, memory: progress.learned[item.char] }))
-        .filter(({ memory }) => memory && memory.seen > 0 && memory.nextReview <= now)
-        .sort((a, b) => {
-          const aWrongRate = a.memory.wrong / Math.max(1, a.memory.seen);
-          const bWrongRate = b.memory.wrong / Math.max(1, b.memory.seen);
-          return (bWrongRate - aWrongRate) || (a.memory.nextReview - b.memory.nextReview) || (a.item.rank - b.item.rank);
-        })
-        .map(({ itemIndex }) => itemIndex);
+        .filter(({ memory }) => memory && memory.seen > 0)
+        .sort((a, b) => reviewPriority(a, b, now));
 
-      const remainingNewSlots = Math.max(0, settings.dailyLimit - introduced.size);
+      const todayLimit = settings.dailyLimit + (today.bonusLimit || 0);
+      const remainingNewSlots = Math.max(0, todayLimit - introduced.size);
       const newToday = [];
       for (let i = 0; i < DICTIONARY.length && newToday.length < remainingNewSlots; i += 1) {
         const item = DICTIONARY[i];
-        if (progress.learned[item.char] || introduced.has(item.char)) continue;
+        const memory = progress.learned[item.char];
+        if ((memory && memory.seen > 0) || introduced.has(item.char)) continue;
         newToday.push(i);
         introduced.add(item.char);
         today.introduced.push(item.char);
@@ -1480,17 +1518,19 @@
         .map((char) => DICTIONARY.findIndex((item) => item.char === char))
         .filter((itemIndex) => itemIndex >= 0);
 
-      const weighted = dueReview.flatMap((itemIndex) => {
+      const weakestReview = learnedReview
+        .slice(0, Math.max(8, settings.dailyLimit))
+        .map(({ itemIndex }) => itemIndex);
+
+      const weighted = weakestReview.flatMap((itemIndex) => {
         const item = DICTIONARY[itemIndex];
         return Array.from({ length: weightForQuestion(item, now) }, () => itemIndex);
       });
 
-      const reviewOrder = spreadRepeatedItems(shuffle(weighted));
+      const reviewOrder = spreadRepeatedItems(weighted);
       const uniqueReviewItems = new Set(reviewOrder);
-      const uniqueOrder = [
-        ...reviewOrder,
-        ...introducedIndexes.filter((itemIndex) => !uniqueReviewItems.has(itemIndex))
-      ];
+      const newOrder = introducedIndexes.filter((itemIndex) => !uniqueReviewItems.has(itemIndex));
+      const uniqueOrder = interleaveNewItems(reviewOrder, newOrder);
 
       if (requestedIndex !== -1) {
         return [requestedIndex, ...uniqueOrder.filter((itemIndex) => itemIndex !== requestedIndex)];
@@ -1511,11 +1551,46 @@
       }, 0);
     }
 
+    function todayDisplayText() {
+      const date = new Date();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${month}/${day}`;
+    }
+
+    function todayNewLimit(today = dailyRecord()) {
+      return settings.dailyLimit + (today.bonusLimit || 0);
+    }
+
+    function todayIntroducedLearnedCount(today = dailyRecord()) {
+      return today.introduced.reduce((count, char) => {
+        const memory = progress.learned[char];
+        return count + (memory && memory.seen > 0 ? 1 : 0);
+      }, 0);
+    }
+
+    function canLearnMoreToday(today = dailyRecord()) {
+      const base = settings.dailyLimit;
+      const maxBonus = Math.max(3, Math.ceil(base * 0.5));
+      return todayIntroducedLearnedCount(today) >= todayNewLimit(today) && (today.bonusLimit || 0) < maxBonus;
+    }
+
+    function learnMoreAmount(today = dailyRecord()) {
+      const base = settings.dailyLimit;
+      const maxBonus = Math.max(3, Math.ceil(base * 0.5));
+      const remainingBonus = Math.max(0, maxBonus - (today.bonusLimit || 0));
+      return Math.min(remainingBonus, Math.max(2, Math.min(5, Math.ceil(base * 0.25))));
+    }
+
     function updateMemoryText() {
       const today = dailyRecord();
       const learnedCount = Object.keys(progress.learned).length;
       const dueCount = countDueReviews();
-      memoryText.textContent = `新字 ${today.introduced.length}/${settings.dailyLimit} · 複習 ${dueCount} · 已學 ${learnedCount}`;
+      const learnedToday = todayIntroducedLearnedCount(today);
+      const showLearnMore = canLearnMoreToday(today);
+      memoryText.textContent = `新字 ${learnedToday}/${todayNewLimit(today)} · 複習 ${dueCount} · 已學 ${learnedCount}`;
+      learnMoreButton.classList.toggle("show", showLearnMore);
+      studyStrip.classList.toggle("learn-more-ready", showLearnMore);
     }
 
     function formatDateTime(time) {
@@ -1550,7 +1625,8 @@
       const totalWrong = rows.reduce((sum, row) => sum + (row.memory.wrong || 0), 0);
       const dueCount = countDueReviews();
 
-      recordSubtitle.textContent = `已學 ${rows.length} 個單字 · 今日新字 ${dailyRecord().introduced.length}/${settings.dailyLimit}`;
+      const today = dailyRecord();
+      recordSubtitle.textContent = `已學 ${rows.length} 個單字 · 今日新字 ${todayIntroducedLearnedCount(today)}/${todayNewLimit(today)}`;
       recordSummary.innerHTML = `
         <div class="record-stat"><strong>${rows.length}</strong><span>已學單字</span></div>
         <div class="record-stat"><strong>${totalSeen}</strong><span>練習次數</span></div>
@@ -1640,6 +1716,16 @@
       rebuildSession();
     }
 
+    function learnMoreNewWords() {
+      const today = dailyRecord();
+      const amount = learnMoreAmount(today);
+      if (amount <= 0) return;
+
+      today.bonusLimit += amount;
+      saveProgress();
+      rebuildSession();
+    }
+
     function scheduleReview(memory, correct, usedHint = false) {
       const now = Date.now();
       memory.seen += 1;
@@ -1666,6 +1752,8 @@
 
     function recordAnswer(question, correct, usedHint = false) {
       const memory = memoryFor(question.char);
+      const today = dailyRecord();
+      today.practiceCount += 1;
       scheduleReview(memory, correct, usedHint);
       updateMemoryText();
       if (recordPanel.classList.contains("show")) renderRecordPanel();
@@ -1722,13 +1810,11 @@
       const letter = role === "head" ? question.head : question.tail;
       const root = ROOTS[letter] || letter;
       const answer = question.answerText?.[role] || `${root}：${root}`;
+      const auxiliary = answer.includes("：") ? answer.split("：").slice(1).join("：") : root;
       const cardImage = auxiliaryCardImage(letter, "answer-card-img", `${root} ${letter} 輔助字型卡`);
       return `
         <div class="answer-card ${role}">
-          <div class="answer-card-header">
-            <div class="answer-label">${label}碼 ${letter}</div>
-            <div class="answer-code">${answer}</div>
-          </div>
+          <div class="answer-label">${label}碼 ${letter}：${auxiliary}</div>
           <div class="answer-card-img-wrap">
             ${cardImage || `<div class="answer-card-fallback">${root}：重碼鍵</div>`}
           </div>
@@ -1847,8 +1933,8 @@
 
     function updateScore() {
       const question = currentQuestion();
-      scoreText.textContent = `${score} / ${answered}`;
-      roundText.textContent = `第 ${Math.min(index + 1, sessionTotal)} / ${sessionTotal} 題 · 常用字 #${question.rank}`;
+      const today = dailyRecord();
+      roundText.textContent = `${todayDisplayText()} · 今日已練 ${today.practiceCount} 次 · 常用字 #${question.rank}`;
       updateMemoryText();
     }
 
@@ -2017,9 +2103,17 @@
 
     resetProgressButton.addEventListener("click", resetLearningProgress);
 
+    learnMoreButton.addEventListener("click", learnMoreNewWords);
+
     deleteButton.addEventListener("click", deleteLastInput);
 
     document.addEventListener("click", closeSettingsMenu);
+
+    ["touchstart", "selectstart", "dragstart"].forEach((eventName) => {
+      keyboardEl.addEventListener(eventName, (event) => {
+        event.preventDefault();
+      }, { passive: false });
+    });
 
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
