@@ -1318,6 +1318,14 @@
     let holdingKey = null;
     let longPressTriggered = false;
 
+    // Anki-style learning queue: cards stay here until they graduate (2 correct in a row)
+    // Each entry: { itemIndex, correctStreak }
+    const LEARNING_STEPS_CORRECT_NEEDED = 2; // consecutive correct answers to graduate
+    const LEARNING_REINSERT_AFTER = 3;       // re-show after this many other cards
+    let learningQueue = [];       // { itemIndex, correctStreak }
+    let currentLearningCard = null; // { itemIndex, correctStreak } — the card being shown now (if from queue)
+    let learningInsertCountdown = 0; // cards until next learning card appears
+
     dailyLimitSelect.value = String(settings.dailyLimit);
 
     function todayKey(time = Date.now()) {
@@ -1526,7 +1534,32 @@
     }
 
     function currentQuestion() {
+      if (currentLearningCard !== null) {
+        return DICTIONARY[currentLearningCard.itemIndex] || null;
+      }
       return Number.isInteger(order[index]) ? DICTIONARY[order[index]] : null;
+    }
+
+    function isLearningCard() {
+      return currentLearningCard !== null;
+    }
+
+    // Decide the next card to show: learning queue or advance index
+    function pickNextCard() {
+      currentLearningCard = null;
+
+      // Time to show a learning card?
+      if (learningQueue.length > 0) {
+        if (learningInsertCountdown <= 0) {
+          currentLearningCard = learningQueue.shift();
+          learningInsertCountdown = LEARNING_REINSERT_AFTER;
+          return;
+        }
+        learningInsertCountdown -= 1;
+      }
+
+      // Otherwise advance the main order
+      index += 1;
     }
 
     function countDueReviews(now = Date.now()) {
@@ -1783,11 +1816,75 @@
       saveProgress();
     }
 
+    // Returns the itemIndex for the current card (from learning queue or main order)
+    function currentItemIndex() {
+      if (currentLearningCard !== null) return currentLearningCard.itemIndex;
+      return Number.isInteger(order[index]) ? order[index] : -1;
+    }
+
+    // Enqueue a card into the learning queue (avoid duplicates)
+    function enqueueForLearning(itemIndex) {
+      const alreadyQueued = learningQueue.some((e) => e.itemIndex === itemIndex);
+      const isCurrentLearning = currentLearningCard && currentLearningCard.itemIndex === itemIndex;
+      if (!alreadyQueued && !isCurrentLearning) {
+        learningQueue.push({ itemIndex, correctStreak: 0 });
+      }
+    }
+
     function recordAnswer(question, correct, usedHint = false) {
       const memory = memoryFor(question.char);
       const today = dailyRecord();
       today.practiceCount += 1;
-      scheduleReview(memory, correct, usedHint);
+
+      const itemIndex = currentItemIndex();
+
+      if (currentLearningCard !== null) {
+        // In learning phase — update streak but don't graduate to SRS yet
+        if (correct && !usedHint) {
+          currentLearningCard.correctStreak += 1;
+        } else {
+          currentLearningCard.correctStreak = 0;
+        }
+
+        const graduated = currentLearningCard.correctStreak >= LEARNING_STEPS_CORRECT_NEEDED;
+
+        if (graduated) {
+          // Now commit to long-term SRS
+          scheduleReview(memory, true, false);
+          // Mark as seen so it counts towards "今日已學"
+          if (memory.seen <= 1) {
+            // already incremented inside scheduleReview; just ensure daily intro counts it
+          }
+        } else {
+          // Still learning — record an attempt for stats but re-queue
+          memory.seen += 1;
+          memory.lastSeen = Date.now();
+          if (correct && !usedHint) {
+            memory.correct += 1;
+          } else {
+            memory.wrong += 1;
+          }
+          saveProgress();
+          // Re-insert into learning queue
+          learningQueue.push({ itemIndex, correctStreak: currentLearningCard.correctStreak });
+          learningInsertCountdown = Math.min(LEARNING_REINSERT_AFTER, learningQueue.length > 0 ? LEARNING_REINSERT_AFTER : 0);
+        }
+      } else {
+        // Normal SRS card
+        const wasNew = !memory || memory.seen <= 0;
+        scheduleReview(memory, correct, usedHint);
+
+        if (!correct || usedHint) {
+          // Wrong or hinted: put into learning queue for in-session practice
+          enqueueForLearning(itemIndex);
+          if (learningInsertCountdown <= 0) learningInsertCountdown = LEARNING_REINSERT_AFTER;
+        } else if (wasNew) {
+          // First-time correct: still put in learning queue to confirm
+          enqueueForLearning(itemIndex);
+          if (learningInsertCountdown <= 0) learningInsertCountdown = LEARNING_REINSERT_AFTER;
+        }
+      }
+
       updateMemoryText();
       if (recordPanel.classList.contains("show")) renderRecordPanel();
     }
@@ -1974,6 +2071,13 @@
       cancelKeyPress();
       const question = currentQuestion();
       if (!question) {
+        // Check if learning queue has cards left
+        if (learningQueue.length > 0) {
+          currentLearningCard = learningQueue.shift();
+          learningInsertCountdown = LEARNING_REINSERT_AFTER;
+          renderQuestion();
+          return;
+        }
         buffer = [];
         locked = true;
         answerShown = false;
@@ -2018,6 +2122,9 @@
       buffer = [];
       locked = false;
       answerShown = false;
+      learningQueue = [];
+      currentLearningCard = null;
+      learningInsertCountdown = 0;
       renderQuestion();
     }
 
@@ -2102,9 +2209,25 @@
 
     function nextQuestion() {
       clearTimer();
-      index += 1;
 
+      pickNextCard();
+
+      // If showing a learning card, just render it
+      if (currentLearningCard !== null) {
+        renderQuestion();
+        return;
+      }
+
+      // Otherwise we advanced index — check bounds
       if (index >= order.length) {
+        // If there are still learning cards pending, keep going
+        if (learningQueue.length > 0) {
+          currentLearningCard = learningQueue.shift();
+          learningInsertCountdown = LEARNING_REINSERT_AFTER;
+          renderQuestion();
+          return;
+        }
+
         const today = dailyRecord();
         today.completed = isDailyTaskComplete(today);
         if (today.completed) {
