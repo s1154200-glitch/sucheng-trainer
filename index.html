@@ -579,6 +579,12 @@
       animation: shake 420ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
     }
 
+    .word.complete {
+      font-size: 46px;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
     .hero.answer-mode {
       grid-template-rows: auto 0 minmax(0, 1fr) auto;
       gap: 6px;
@@ -1266,6 +1272,7 @@
       })
       .filter(Boolean)
       .sort((a, b) => a.rank - b.rank);
+    const DICTIONARY_CHAR_SET = new Set(DICTIONARY.map((item) => item.char));
 
     const STORAGE_KEY = "suchengTrainerSrs.v2";
     const SETTINGS_KEY = "suchengTrainerSettings.v1";
@@ -1390,15 +1397,24 @@
 
     function dailyRecord() {
       const key = todayKey();
-      if (!progress.daily[key]) progress.daily[key] = { introduced: [], practiceCount: 0, bonusLimit: 0 };
+      if (!progress.daily[key]) progress.daily[key] = { introduced: [], practiceCount: 0, bonusLimit: 0, completed: false };
       if (!Array.isArray(progress.daily[key].introduced)) {
         progress.daily[key].introduced = [];
       }
+      const seenChars = new Set();
+      progress.daily[key].introduced = progress.daily[key].introduced.filter((char) => {
+        if (!DICTIONARY_CHAR_SET.has(char) || seenChars.has(char)) return false;
+        seenChars.add(char);
+        return true;
+      });
       if (!Number.isFinite(progress.daily[key].practiceCount)) {
         progress.daily[key].practiceCount = 0;
       }
       if (!Number.isFinite(progress.daily[key].bonusLimit)) {
         progress.daily[key].bonusLimit = 0;
+      }
+      if (typeof progress.daily[key].completed !== "boolean") {
+        progress.daily[key].completed = false;
       }
       return progress.daily[key];
     }
@@ -1422,17 +1438,6 @@
       saveProgress();
     }
 
-    function weightForQuestion(item, now = Date.now()) {
-      const memory = progress.learned[item.char];
-      if (!memory) return 1;
-      const dueBoost = memory.nextReview <= now ? 2 : 0;
-      const lowLevelBoost = Math.max(0, 3 - (memory.level || 0));
-      const wrongRate = memory.wrong / Math.max(1, memory.seen);
-      const weakBoost = Math.min(5, Math.max(0, memory.wrong - memory.correct + 1) + Math.ceil(wrongRate * 3));
-      const recencyPenalty = now - (memory.lastSeen || 0) < 10 * 60 * 1000 ? 0.65 : 1;
-      return Math.max(1, Math.round((1 + dueBoost + lowLevelBoost + weakBoost) * recencyPenalty));
-    }
-
     function reviewPriority(a, b, now = Date.now()) {
       const aMemory = a.memory;
       const bMemory = b.memory;
@@ -1453,28 +1458,6 @@
       return (aMemory.nextReview || 0) - (bMemory.nextReview || 0) || a.item.rank - b.item.rank;
     }
 
-    function shuffle(items) {
-      const arr = [...items];
-      for (let i = arr.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    function spreadRepeatedItems(items) {
-      const pool = [...items];
-      const result = [];
-
-      while (pool.length) {
-        let pickIndex = pool.findIndex((itemIndex) => itemIndex !== result[result.length - 1]);
-        if (pickIndex === -1) pickIndex = 0;
-        result.push(pool.splice(pickIndex, 1)[0]);
-      }
-
-      return result;
-    }
-
     function interleaveNewItems(reviewItems, newItems) {
       const result = [];
       const newQueue = [...newItems];
@@ -1489,59 +1472,61 @@
       return [...result, ...newQueue];
     }
 
+    function dueReviewIndexes(now = Date.now()) {
+      return DICTIONARY
+        .map((item, itemIndex) => ({ item, itemIndex, memory: progress.learned[item.char] }))
+        .filter(({ memory }) => memory && memory.seen > 0 && memory.nextReview <= now)
+        .sort((a, b) => reviewPriority(a, b, now))
+        .map(({ itemIndex }) => itemIndex);
+    }
+
+    function introduceNewWords(today) {
+      const introduced = new Set(today.introduced);
+      const remainingNewSlots = Math.max(0, todayNewLimit(today) - introduced.size);
+      if (remainingNewSlots <= 0) return;
+
+      for (let i = 0; i < DICTIONARY.length && today.introduced.length < todayNewLimit(today); i += 1) {
+        const item = DICTIONARY[i];
+        const memory = progress.learned[item.char];
+        if ((memory && memory.seen > 0) || introduced.has(item.char)) continue;
+        introduced.add(item.char);
+        today.introduced.push(item.char);
+      }
+    }
+
+    function pendingNewIndexes(today) {
+      return today.introduced
+        .map((char) => DICTIONARY.findIndex((item) => item.char === char))
+        .filter((itemIndex) => {
+          if (itemIndex < 0) return false;
+          const memory = progress.learned[DICTIONARY[itemIndex].char];
+          return !memory || memory.seen <= 0;
+        });
+    }
+
     function createQuestionOrder() {
       const requestedChar = new URLSearchParams(window.location.search).get("char");
       const requestedIndex = DICTIONARY.findIndex((item) => item.char === requestedChar);
 
       const now = Date.now();
       const today = dailyRecord();
-      const introduced = new Set(today.introduced);
+      introduceNewWords(today);
 
-      const learnedReview = DICTIONARY
-        .map((item, itemIndex) => ({ item, itemIndex, memory: progress.learned[item.char] }))
-        .filter(({ memory }) => memory && memory.seen > 0)
-        .sort((a, b) => reviewPriority(a, b, now));
-
-      const todayLimit = settings.dailyLimit + (today.bonusLimit || 0);
-      const remainingNewSlots = Math.max(0, todayLimit - introduced.size);
-      const newToday = [];
-      for (let i = 0; i < DICTIONARY.length && newToday.length < remainingNewSlots; i += 1) {
-        const item = DICTIONARY[i];
-        const memory = progress.learned[item.char];
-        if ((memory && memory.seen > 0) || introduced.has(item.char)) continue;
-        newToday.push(i);
-        introduced.add(item.char);
-        today.introduced.push(item.char);
-      }
-
-      const introducedIndexes = today.introduced
-        .map((char) => DICTIONARY.findIndex((item) => item.char === char))
-        .filter((itemIndex) => itemIndex >= 0);
-
-      const weakestReview = learnedReview
-        .slice(0, Math.max(8, settings.dailyLimit))
-        .map(({ itemIndex }) => itemIndex);
-
-      const weighted = weakestReview.flatMap((itemIndex) => {
-        const item = DICTIONARY[itemIndex];
-        return Array.from({ length: weightForQuestion(item, now) }, () => itemIndex);
-      });
-
-      const reviewOrder = spreadRepeatedItems(weighted);
-      const uniqueReviewItems = new Set(reviewOrder);
-      const newOrder = introducedIndexes.filter((itemIndex) => !uniqueReviewItems.has(itemIndex));
-      const uniqueOrder = interleaveNewItems(reviewOrder, newOrder);
+      const reviewOrder = dueReviewIndexes(now);
+      const pendingOrder = pendingNewIndexes(today);
+      const uniqueOrder = interleaveNewItems(reviewOrder, pendingOrder);
 
       if (requestedIndex !== -1) {
         return [requestedIndex, ...uniqueOrder.filter((itemIndex) => itemIndex !== requestedIndex)];
       }
 
+      today.completed = isDailyTaskComplete(today, now);
       saveProgress();
-      return uniqueOrder.length ? uniqueOrder : [0];
+      return uniqueOrder;
     }
 
     function currentQuestion() {
-      return DICTIONARY[order[index]];
+      return Number.isInteger(order[index]) ? DICTIONARY[order[index]] : null;
     }
 
     function countDueReviews(now = Date.now()) {
@@ -1549,6 +1534,16 @@
         const memory = progress.learned[item.char];
         return count + (memory && memory.seen > 0 && memory.nextReview <= now ? 1 : 0);
       }, 0);
+    }
+
+    function nextDueReviewTime(now = Date.now()) {
+      return DICTIONARY.reduce((soonest, item) => {
+        const memory = progress.learned[item.char];
+        if (!memory || memory.seen <= 0 || !Number.isFinite(memory.nextReview) || memory.nextReview <= now) {
+          return soonest;
+        }
+        return Math.min(soonest, memory.nextReview);
+      }, Infinity);
     }
 
     function todayDisplayText() {
@@ -1569,17 +1564,42 @@
       }, 0);
     }
 
+    function todayIntroducedPendingCount(today = dailyRecord()) {
+      return today.introduced.reduce((count, char) => {
+        const memory = progress.learned[char];
+        return count + ((memory && memory.seen > 0) ? 0 : 1);
+      }, 0);
+    }
+
+    function remainingUnseenWordCount(today = dailyRecord()) {
+      const introduced = new Set(today.introduced);
+      return DICTIONARY.reduce((count, item) => {
+        const memory = progress.learned[item.char];
+        if ((memory && memory.seen > 0) || introduced.has(item.char)) return count;
+        return count + 1;
+      }, 0);
+    }
+
+    function isDailyTaskComplete(today = dailyRecord(), now = Date.now()) {
+      return !hasDueReviewNow(now)
+        && todayIntroducedPendingCount(today) === 0
+        && todayIntroducedLearnedCount(today) >= todayNewLimit(today);
+    }
+
     function canLearnMoreToday(today = dailyRecord()) {
       const base = settings.dailyLimit;
       const maxBonus = Math.max(3, Math.ceil(base * 0.5));
-      return todayIntroducedLearnedCount(today) >= todayNewLimit(today) && (today.bonusLimit || 0) < maxBonus;
+      return isDailyTaskComplete(today)
+        && remainingUnseenWordCount(today) > 0
+        && (today.bonusLimit || 0) < maxBonus;
     }
 
     function learnMoreAmount(today = dailyRecord()) {
       const base = settings.dailyLimit;
       const maxBonus = Math.max(3, Math.ceil(base * 0.5));
       const remainingBonus = Math.max(0, maxBonus - (today.bonusLimit || 0));
-      return Math.min(remainingBonus, Math.max(2, Math.min(5, Math.ceil(base * 0.25))));
+      const remainingNewWords = remainingUnseenWordCount(today);
+      return Math.min(remainingBonus, remainingNewWords, Math.max(2, Math.min(5, Math.ceil(base * 0.25))));
     }
 
     function updateMemoryText() {
@@ -1588,9 +1608,21 @@
       const dueCount = countDueReviews();
       const learnedToday = todayIntroducedLearnedCount(today);
       const showLearnMore = canLearnMoreToday(today);
-      memoryText.textContent = `新字 ${learnedToday}/${todayNewLimit(today)} · 複習 ${dueCount} · 已學 ${learnedCount}`;
+      const completed = isDailyTaskComplete(today);
+      const nextDue = nextDueReviewTime();
+      memoryText.textContent = completed
+        ? `已完成今日任務 · 下次複習 ${Number.isFinite(nextDue) ? formatDateTime(nextDue) : "無"}`
+        : `新字 ${learnedToday}/${todayNewLimit(today)} · 複習 ${dueCount} · 已學 ${learnedCount}`;
       learnMoreButton.classList.toggle("show", showLearnMore);
       studyStrip.classList.toggle("learn-more-ready", showLearnMore);
+      today.completed = completed;
+    }
+
+    function hasDueReviewNow(now = Date.now()) {
+      return DICTIONARY.some((item) => {
+        const memory = progress.learned[item.char];
+        return memory && memory.seen > 0 && memory.nextReview <= now;
+      });
     }
 
     function formatDateTime(time) {
@@ -1722,6 +1754,7 @@
       if (amount <= 0) return;
 
       today.bonusLimit += amount;
+      today.completed = false;
       saveProgress();
       rebuildSession();
     }
@@ -1757,14 +1790,6 @@
       scheduleReview(memory, correct, usedHint);
       updateMemoryText();
       if (recordPanel.classList.contains("show")) renderRecordPanel();
-    }
-
-    function reinforceSoon(question) {
-      const itemIndex = DICTIONARY.findIndex((item) => item.char === question.char);
-      if (itemIndex < 0) return;
-      const insertAt = Math.min(order.length, index + 3);
-      order.splice(insertAt, 0, itemIndex);
-      sessionTotal = Math.max(sessionTotal, order.length);
     }
 
     function rootLabel(letter) {
@@ -1933,6 +1958,12 @@
 
     function updateScore() {
       const question = currentQuestion();
+      if (!question) {
+        const today = dailyRecord();
+        roundText.textContent = today.completed ? `已完成今日任務` : `今日任務進行中`;
+        updateMemoryText();
+        return;
+      }
       const today = dailyRecord();
       roundText.textContent = `${todayDisplayText()} · 今日已練 ${today.practiceCount} 次 · 常用字 #${question.rank}`;
       updateMemoryText();
@@ -1942,6 +1973,25 @@
       clearTimer();
       cancelKeyPress();
       const question = currentQuestion();
+      if (!question) {
+        buffer = [];
+        locked = true;
+        answerShown = false;
+        currentRecorded = false;
+        hintButton.disabled = true;
+        hintButton.textContent = "已完成今日任務";
+        hintButton.classList.remove("next");
+        heroEl.classList.remove("answer-mode");
+        wordEl.className = "word complete";
+        wordEl.textContent = "完成";
+        wordEl.setAttribute("aria-label", "已完成今日任務");
+        answerLine.className = "answer-line";
+        answerLine.innerHTML = "";
+        renderBuffer();
+        updateScore();
+        document.querySelectorAll(".key").forEach((key) => key.classList.remove("active"));
+        return;
+      }
       buffer = [];
       locked = false;
       answerShown = false;
@@ -2009,12 +2059,13 @@
         updateScore();
         wordEl.classList.remove("entering");
         restartClass(wordEl, "correct");
-        nextTimer = window.setTimeout(nextQuestion, 500);
+        nextTimer = window.setTimeout(() => {
+          nextQuestion();
+        }, 500);
       } else {
         answered += 1;
         currentRecorded = true;
         recordAnswer(question, false);
-        reinforceSoon(question);
         updateScore();
         renderBuffer(true);
         revealAnswer("wrong");
@@ -2035,7 +2086,6 @@
         answered += 1;
         currentRecorded = true;
         recordAnswer(question, false, true);
-        reinforceSoon(question);
         updateScore();
       }
 
@@ -2055,6 +2105,12 @@
       index += 1;
 
       if (index >= order.length) {
+        const today = dailyRecord();
+        today.completed = isDailyTaskComplete(today);
+        if (today.completed) {
+          renderQuestion();
+          return;
+        }
         rebuildSession();
         return;
       }
