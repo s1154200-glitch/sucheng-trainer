@@ -1630,9 +1630,9 @@
     function learnMoreAmount(today = dailyRecord()) {
       const base = settings.dailyLimit;
       const maxBonus = Math.max(3, Math.ceil(base * 0.5));
-      const remainingBonus = Math.max(0, maxBonus - (today.bonusLimit || 0));
+      const currentBonus = today.bonusLimit || 0;
       const remainingNewWords = remainingUnseenWordCount(today);
-      return Math.min(remainingBonus, remainingNewWords, Math.max(2, Math.min(5, Math.ceil(base * 0.25))));
+      return Math.min(Math.max(0, maxBonus - currentBonus), remainingNewWords);
     }
 
     function updateMemoryText() {
