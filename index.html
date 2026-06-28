@@ -18,6 +18,13 @@
       --success: #18b66c;
       --danger: #e84b5f;
       --tail: #18b66c;
+      --aux-blue: #1f7af0;
+      --aux-red: #f71818;
+      --aux-orange: #f06918;
+      --aux-green: #08b61e;
+      --aux-magenta: #d91be8;
+      --aux-gold: #e28d15;
+      --aux-line-strong: rgba(238, 255, 0, 0.88);
       --shadow: 0 22px 52px rgba(13, 20, 28, 0.22);
       --soft-shadow: 0 10px 28px rgba(25, 40, 55, 0.12);
     }
@@ -432,6 +439,80 @@
       font-weight: 950;
     }
 
+    .record-sort-head {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .record-sort-button {
+      width: 14px;
+      min-width: 14px;
+      height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: #17202b;
+      line-height: 1;
+      opacity: 0.72;
+      transition: transform 140ms ease, color 140ms ease, opacity 140ms ease;
+    }
+
+    .record-sort-button::before,
+    .record-sort-button::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: 4px;
+      height: 4px;
+      border-right: 1.4px solid currentColor;
+      border-bottom: 1.4px solid currentColor;
+      opacity: 0.34;
+      transform-origin: center;
+      transition: opacity 140ms ease, transform 140ms ease;
+    }
+
+    .record-sort-button::before {
+      top: 3px;
+      transform: translateX(-50%) rotate(225deg);
+    }
+
+    .record-sort-button::after {
+      bottom: 3px;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .record-sort-button[aria-pressed="true"][data-direction="asc"]::before,
+    .record-sort-button[aria-pressed="true"][data-direction="desc"]::after {
+      opacity: 1;
+      transform: translateX(-50%) rotate(var(--sort-rotate, 45deg)) scale(1.08);
+    }
+
+    .record-sort-button[aria-pressed="true"][data-direction="asc"]::before {
+      --sort-rotate: 225deg;
+    }
+
+    .record-sort-button[aria-pressed="true"][data-direction="desc"]::after {
+      --sort-rotate: 45deg;
+    }
+
+    .record-sort-button[aria-pressed="true"] {
+      color: #17202b;
+      opacity: 1;
+    }
+
+    .record-sort-button:hover {
+      opacity: 1;
+    }
+
+    .record-sort-button:active {
+      transform: translateY(1px) scale(0.92);
+    }
+
     .record-table tr:last-child td {
       border-bottom: 0;
     }
@@ -618,16 +699,6 @@
       display: none;
     }
 
-    .hero.answer-mode .word-wrap {
-      width: 94px;
-      height: 54px;
-      border-radius: 16px;
-    }
-
-    .hero.answer-mode .word {
-      font-size: 46px;
-    }
-
     .hero.answer-mode .prompt-meta {
       font-size: 12px;
     }
@@ -740,7 +811,7 @@
     }
 
     .answer-line.show {
-      height: clamp(336px, 50dvh, 440px);
+      height: clamp(248px, 38dvh, 310px);
       opacity: 1;
       transform: translateY(0);
     }
@@ -751,10 +822,7 @@
       display: grid;
       grid-template-rows: auto 1fr;
       gap: 7px;
-      padding: 8px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: inset 0 0 0 1px var(--line), 0 10px 22px rgba(25, 40, 55, 0.1);
+      justify-items: center;
     }
 
     .answer-card.head {
@@ -769,29 +837,24 @@
       min-width: 0;
       font-size: 12px;
       line-height: 1.2;
-      color: var(--muted);
+      color: currentColor;
       font-weight: 850;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      text-align: center;
     }
 
     .answer-card-img-wrap {
       min-height: 0;
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
       align-self: stretch;
-      border-radius: 13px;
-      background: #ffffff;
-      box-shadow: inset 0 0 0 1px rgba(21, 32, 43, 0.08);
-      overflow: hidden;
+      overflow: visible;
     }
 
     .answer-card-img {
-      width: auto;
-      height: auto;
-      max-width: 100%;
-      max-height: 100%;
       object-fit: contain;
       display: block;
       user-select: none;
@@ -809,6 +872,108 @@
       line-height: 1.35;
       font-weight: 850;
       text-align: center;
+    }
+
+    .aux-card {
+      width: 128px;
+      height: 202px;
+      position: relative;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      border-radius: 16px;
+      border: 2px solid var(--aux-line-strong);
+      background: #fbfcf8;
+      color: #101217;
+      overflow: hidden;
+      box-shadow: 0 10px 22px rgba(25, 40, 55, 0.12);
+    }
+
+    .aux-card-head {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding-top: 5px;
+    }
+
+    .aux-badge-pair {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex: 0 0 auto;
+    }
+
+    .aux-root-badge,
+    .aux-letter-badge {
+      height: 28px;
+      min-width: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 7px;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .aux-letter-badge {
+      background: var(--aux-blue);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: 20px;
+    }
+
+    .aux-card-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(var(--aux-glyph-cols, 4), minmax(0, 1fr));
+      grid-auto-rows: var(--aux-glyph-size, 33px);
+      align-content: start;
+      gap: var(--aux-glyph-gap-y, 3px) var(--aux-glyph-gap-x, 3px);
+      padding: 2px 7px 8px;
+      overflow: hidden;
+    }
+
+    .aux-card-glyph {
+      width: min(var(--aux-glyph-size, 33px), 100%);
+      height: min(var(--aux-glyph-size, 33px), 100%);
+      display: block;
+      margin: auto;
+      object-fit: contain;
+      filter: contrast(1.05);
+    }
+
+    .aux-text-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-content: start;
+      grid-auto-rows: 30px;
+      gap: 8px;
+      padding: 6px 10px 10px;
+      overflow: hidden;
+    }
+
+    .aux-text-grid.is-note {
+      grid-template-columns: minmax(0, 1fr);
+      grid-auto-rows: auto;
+      align-content: start;
+      padding-inline: 12px;
+      padding-top: 8px;
+    }
+
+    .aux-description-cell {
+      grid-column: 1 / -1;
+      align-self: start;
+      padding: 2px 2px 0;
+      color: #171a20;
+      font-size: 16px;
+      line-height: 1.45;
+      font-weight: 900;
+      text-align: center;
+      word-break: keep-all;
     }
 
     .hint-button {
@@ -860,12 +1025,10 @@
       z-index: 5;
       left: 50%;
       bottom: calc(100% + 10px);
-      width: min(248px, calc(100% - 34px));
-      padding: 10px;
-      border-radius: 18px;
-      background: rgba(23, 32, 43, 0.96);
-      color: #ffffff;
-      box-shadow: 0 16px 34px rgba(16, 23, 31, 0.22);
+      width: auto;
+      max-width: calc(100% - 34px);
+      display: grid;
+      justify-items: center;
       opacity: 0;
       pointer-events: none;
       transform: translate(-50%, 8px) scale(0.96);
@@ -877,42 +1040,23 @@
       transform: translate(-50%, 0) scale(1);
     }
 
-    .key-hint-title {
-      display: flex;
-      align-items: baseline;
-      gap: 7px;
-      font-size: 13px;
-      line-height: 1;
-      font-weight: 900;
-    }
-
-    .key-hint-title strong {
-      font-size: 21px;
-      line-height: 1;
-    }
-
     .key-hint-card {
-      width: 100%;
-      max-height: min(410px, 56dvh);
       display: block;
-      margin-top: 8px;
-      border-radius: 16px;
-      background: #ffffff;
-      object-fit: contain;
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+      margin: 0 auto;
       user-select: none;
       -webkit-user-drag: none;
     }
 
     .key-hint-fallback {
-      margin-top: 10px;
       padding: 14px;
       border-radius: 14px;
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(23, 32, 43, 0.96);
       color: #ffffff;
+      box-shadow: 0 16px 34px rgba(16, 23, 31, 0.22);
       font-size: 15px;
       line-height: 1.35;
       font-weight: 850;
+      text-align: center;
     }
 
     .key-row {
@@ -1092,7 +1236,7 @@
       }
 
       .answer-line.show {
-        height: clamp(320px, 52dvh, 410px);
+        height: clamp(236px, 42dvh, 286px);
       }
 
       .answer-card {
@@ -1101,15 +1245,6 @@
 
       .answer-label {
         font-size: 11px;
-      }
-
-      .hero.answer-mode .word-wrap {
-        width: 86px;
-        height: 48px;
-      }
-
-      .hero.answer-mode .word {
-        font-size: 40px;
       }
 
       .keyboard {
@@ -1234,13 +1369,44 @@
   </main>
 
   <script>
+    const COMMONS_FILE = "https://commons.wikimedia.org/wiki/Special:Redirect/file/";
+
     const ROOTS = {
       Q: "手", W: "田", E: "水", R: "口", T: "廿", Y: "卜", U: "山", I: "戈", O: "人", P: "心",
       A: "日", S: "尸", D: "木", F: "火", G: "土", H: "竹", J: "十", K: "大", L: "中",
       Z: "重", X: "難", C: "金", V: "女", B: "月", N: "弓", M: "一"
     };
 
-    const AUXILIARY_CARD_LETTERS = new Set("ABCDEFGHIJKLMNOPQRSTUVWXY".split(""));
+    const AUXILIARY_CARD_INFO = {
+      Q: { root: "手", color: "red", glyphs: "q0 q1 q2 q3 q4 q9 q5 q6 q7 q8" },
+      W: { root: "田", color: "red", glyphs: "w0 w1 w2 w3" },
+      E: { root: "水", color: "orange", glyphs: "e0 e1 e3 e4 e5 e2 e7 e6 e8" },
+      R: { root: "口", color: "orange", glyphs: "r0" },
+      T: { root: "廿", color: "orange", glyphs: "t0 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t15 t13 t16" },
+      Y: { root: "卜", color: "green", glyphs: "y0 y1 y2 y3 y4 y5 y6 y7 y8 y11" },
+      U: { root: "山", color: "green", glyphs: "u0 u1 u2 u5 u3 u4" },
+      I: { root: "戈", color: "magenta", glyphs: "i0 i1 i4 i2 i3" },
+      O: { root: "人", color: "magenta", glyphs: "o0 o2 o3 o4 o5 o6 o7 o8 o9 o10 o11 o12 o13 o14" },
+      P: { root: "心", color: "magenta", glyphs: "p0 p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13 p14 p15 p17 p16" },
+      A: { root: "日", color: "red", glyphs: "a0 a1 a2 a3" },
+      S: { root: "尸", color: "red", glyphs: "s0 s1 s2 s3 s4 s5 s6 s7 s8 s9 s10" },
+      D: { root: "木", color: "orange", glyphs: "d0 d1 d2 d7 d3 d4 d5 d6" },
+      F: { root: "火", color: "orange", glyphs: "f0 f1 f2 f3 f5 f7 f4 f6 f8 f9 f11" },
+      G: { root: "土", color: "orange", glyphs: "g0 g1 g2 g3" },
+      H: { root: "竹", color: "green", glyphs: "h0 h1 h2 h3 h4 h5 h6" },
+      J: { root: "十", color: "green", glyphs: "j0 j1 j3 j2" },
+      K: { root: "大", color: "magenta", glyphs: "k0 k1 k11 k2 k4 k5 k3 k6" },
+      L: { root: "中", color: "magenta", glyphs: "l0 l1 l2 l3 l4 l5 l6" },
+      Z: { root: "重", color: "red", glyphs: "", note: "沒有字根\n標點符號" },
+      X: { root: "難", color: "red", glyphs: "", note: "沒有字根\n用於難字" },
+      C: { root: "金", color: "orange", glyphs: "c0 c1 c2 c3 c4 c5 c6 c9" },
+      V: { root: "女", color: "orange", glyphs: "v0 v1 v2 v3 v4 v5 v6 v7 v8 v9 v10" },
+      B: { root: "月", color: "orange", glyphs: "b0 b1 b2 b3 b4 b5 b6 b9 b7 b10 b8 b11 b19 b20 b12 b14 b23 b13 b15 b16 b17" },
+      N: { root: "弓", color: "green", glyphs: "n0 n1 n2 n3 n12 n11 n4 n5 n7 n8 n9 n10" },
+      M: { root: "一", color: "green", glyphs: "m0 m1 m6 m2 m3 m4 m5" }
+    };
+
+    const AUXILIARY_CARD_LETTERS = new Set(Object.keys(AUXILIARY_CARD_INFO));
 
     const KEY_ROWS = [
       ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -1317,6 +1483,9 @@
     let holdTimer = null;
     let holdingKey = null;
     let longPressTriggered = false;
+    let recordSort = { key: "default", direction: "desc" };
+    const auxiliaryCardCache = new Map();
+    const auxiliaryGlyphPreloadUrls = new Set();
 
     // Anki-style learning queue: cards stay here until they graduate (2 correct in a row)
     // Each entry: { itemIndex, correctStreak }
@@ -1672,15 +1841,59 @@
       return `${Math.round(value * 100)}%`;
     }
 
+    function accuracyValue(memory) {
+      return (memory.correct || 0) / Math.max(1, (memory.correct || 0) + (memory.wrong || 0));
+    }
+
+    function recordSortValue(row, key) {
+      const memory = row.memory;
+      if (key === "seen") return memory.seen || 0;
+      if (key === "accuracy") return accuracyValue(memory);
+      if (key === "streak") return memory.streak || 0;
+      if (key === "nextReview") return memory.nextReview || 0;
+      return 0;
+    }
+
+    function defaultLearningRowCompare(a, b) {
+      const wrongDiff = (b.memory.wrong || 0) - (a.memory.wrong || 0);
+      if (wrongDiff) return wrongDiff;
+      return (b.memory.lastSeen || 0) - (a.memory.lastSeen || 0) || a.item.rank - b.item.rank;
+    }
+
+    function compareLearningRows(a, b) {
+      if (recordSort.key === "default") return defaultLearningRowCompare(a, b);
+
+      const direction = recordSort.direction === "asc" ? 1 : -1;
+      const diff = recordSortValue(a, recordSort.key) - recordSortValue(b, recordSort.key);
+      if (diff) return diff * direction;
+      return defaultLearningRowCompare(a, b);
+    }
+
+    function sortControl(key, label) {
+      const active = recordSort.key === key;
+      const direction = active ? recordSort.direction : "desc";
+      const orderText = direction === "asc" ? "順序" : "倒序";
+      return `
+        <span class="record-sort-head">
+          <span>${label}</span>
+          <button
+            class="record-sort-button"
+            type="button"
+            data-sort-key="${key}"
+            data-direction="${direction}"
+            aria-pressed="${active ? "true" : "false"}"
+            aria-label="${label}${active ? `目前${orderText}` : "排序"}"
+            title="${label}${active ? `：${orderText}` : "排序"}"
+          ></button>
+        </span>
+      `;
+    }
+
     function learningRows() {
       return DICTIONARY
         .map((item) => ({ item, memory: progress.learned[item.char] }))
         .filter(({ memory }) => memory && memory.seen > 0)
-        .sort((a, b) => {
-          const wrongDiff = (b.memory.wrong || 0) - (a.memory.wrong || 0);
-          if (wrongDiff) return wrongDiff;
-          return (b.memory.lastSeen || 0) - (a.memory.lastSeen || 0) || a.item.rank - b.item.rank;
-        });
+        .sort(compareLearningRows);
     }
 
     function renderRecordPanel() {
@@ -1708,7 +1921,7 @@
         const attempts = memory.seen || 0;
         const correct = memory.correct || 0;
         const wrong = memory.wrong || 0;
-        const rate = percent(correct / Math.max(1, correct + wrong));
+        const rate = percent(accuracyValue(memory));
         return `
           <tr>
             <td><span class="record-char">${item.char}</span></td>
@@ -1731,12 +1944,12 @@
               <th>單字</th>
               <th>Rank</th>
               <th>碼</th>
-              <th>次數</th>
+              <th>${sortControl("seen", "次數")}</th>
               <th>正確</th>
               <th>錯誤</th>
-              <th>正確率</th>
-              <th>連勝</th>
-              <th>下次複習</th>
+              <th>${sortControl("accuracy", "正確率")}</th>
+              <th>${sortControl("streak", "連勝")}</th>
+              <th>${sortControl("nextReview", "下次複習")}</th>
             </tr>
           </thead>
           <tbody>${body}</tbody>
@@ -1915,28 +2128,138 @@
       deleteButton.disabled = locked || buffer.length === 0;
     }
 
-    function auxiliaryCardSrc(letter) {
-      return `輔助字型/${letter}.png`;
+    function auxiliaryGlyphUrl(id) {
+      return `${COMMONS_FILE}Cjrm-${id}.svg`;
+    }
+
+    function auxiliaryColor(name) {
+      const colors = {
+        red: "var(--aux-red)",
+        orange: "var(--aux-orange)",
+        green: "var(--aux-green)",
+        magenta: "var(--aux-magenta)",
+        gold: "var(--aux-gold)"
+      };
+      return colors[name] || "var(--aux-blue)";
+    }
+
+    function auxiliarySplitGlyphs(letter) {
+      const glyphs = AUXILIARY_CARD_INFO[letter]?.glyphs || "";
+      return glyphs.trim().split(/\s+/).filter(Boolean);
+    }
+
+    function auxiliaryGlyphColumns(count) {
+      if (count >= 13) return 4;
+      return 3;
+    }
+
+    function auxiliaryGlyphSize(count, columns) {
+      if (count >= 20) return "23px";
+      if (count >= 18) return "25px";
+      if (count >= 14) return "29px";
+      if (columns === 3 && count >= 10) return "32px";
+      if (columns === 3) return "35px";
+      return "33px";
+    }
+
+    function auxiliaryGlyphGap(count, columns) {
+      if (columns === 3) {
+        return {
+          x: count >= 10 ? "8px" : "9px",
+          y: count >= 10 ? "4px" : "7px"
+        };
+      }
+
+      return {
+        x: count >= 18 ? "2px" : "3px",
+        y: count >= 18 ? "2px" : "3px"
+      };
+    }
+
+    function auxiliaryBadgePair(letter) {
+      const info = AUXILIARY_CARD_INFO[letter];
+      if (!info) return "";
+      return `
+        <span class="aux-badge-pair" aria-label="${info.root} ${letter}">
+          <span class="aux-root-badge" style="background:${auxiliaryColor(info.color)}">${info.root}</span>
+          <span class="aux-letter-badge">${letter}</span>
+        </span>
+      `;
+    }
+
+    function auxiliaryGlyphMarkup(id) {
+      return `<img class="aux-card-glyph" src="${auxiliaryGlyphUrl(id)}" alt="${id}" loading="eager" decoding="sync" fetchpriority="high">`;
+    }
+
+    function preloadAuxiliaryGlyphs(letter) {
+      auxiliarySplitGlyphs(letter).forEach((id) => {
+        const url = auxiliaryGlyphUrl(id);
+        if (auxiliaryGlyphPreloadUrls.has(url)) return;
+        auxiliaryGlyphPreloadUrls.add(url);
+        const img = new Image();
+        img.decoding = "async";
+        img.src = url;
+      });
+    }
+
+    function warmAuxiliaryCards() {
+      Object.keys(AUXILIARY_CARD_INFO).forEach((letter) => preloadAuxiliaryGlyphs(letter));
+    }
+
+    function auxiliarySpecialGrid(letter) {
+      const info = AUXILIARY_CARD_INFO[letter];
+      if (!info?.note) return "";
+      return `
+        <div class="aux-text-grid is-note">
+          <div class="aux-description-cell">${info.note.replace(/\n/g, "<br>")}</div>
+        </div>
+      `;
     }
 
     function hasAuxiliaryCard(letter) {
       return AUXILIARY_CARD_LETTERS.has(letter);
     }
 
-    function auxiliaryCardImage(letter, className, alt) {
+    function auxiliaryCardMarkup(letter, className, alt) {
       if (!hasAuxiliaryCard(letter)) return "";
-      return `<img class="${className}" src="${auxiliaryCardSrc(letter)}" alt="${alt}">`;
+      preloadAuxiliaryGlyphs(letter);
+      let baseMarkup = auxiliaryCardCache.get(letter);
+
+      if (!baseMarkup) {
+        const info = AUXILIARY_CARD_INFO[letter];
+        if (!info) return "";
+        const glyphs = auxiliarySplitGlyphs(letter);
+        const columns = auxiliaryGlyphColumns(glyphs.length);
+        const gaps = auxiliaryGlyphGap(glyphs.length, columns);
+        const body = glyphs.length
+          ? `
+            <div class="aux-card-grid" style="--aux-glyph-cols:${columns};--aux-glyph-size:${auxiliaryGlyphSize(glyphs.length, columns)};--aux-glyph-gap-x:${gaps.x};--aux-glyph-gap-y:${gaps.y};">
+              ${glyphs.map((id) => auxiliaryGlyphMarkup(id)).join("")}
+            </div>
+          `
+          : auxiliarySpecialGrid(letter);
+
+        baseMarkup = `
+          <div class="aux-card" role="img">
+            <div class="aux-card-head">${auxiliaryBadgePair(letter)}</div>
+            ${body}
+          </div>
+        `;
+        auxiliaryCardCache.set(letter, baseMarkup);
+      }
+
+      return baseMarkup
+        .replace('class="aux-card"', `class="aux-card ${className}"`)
+        .replace('role="img"', `role="img" aria-label="${alt}"`);
     }
 
     function answerCard(role, label, question) {
       const letter = role === "head" ? question.head : question.tail;
       const root = ROOTS[letter] || letter;
-      const answer = question.answerText?.[role] || `${root}：${root}`;
-      const auxiliary = answer.includes("：") ? answer.split("：").slice(1).join("：") : root;
-      const cardImage = auxiliaryCardImage(letter, "answer-card-img", `${root} ${letter} 輔助字型卡`);
+      const cardImage = auxiliaryCardMarkup(letter, "answer-card-img", `${root} ${letter} 輔助字型卡`);
       return `
         <div class="answer-card ${role}">
-          <div class="answer-label">${label}碼 ${letter}：${auxiliary}</div>
+          <div class="answer-label">${label}碼 ${letter}</div>
           <div class="answer-card-img-wrap">
             ${cardImage || `<div class="answer-card-fallback">${root}：重碼鍵</div>`}
           </div>
@@ -1946,9 +2269,8 @@
 
     function showKeyHint(letter, keyEl) {
       const root = ROOTS[letter] || letter;
-      const cardImage = auxiliaryCardImage(letter, "key-hint-card", `${root} ${letter} 輔助字型卡`);
+      const cardImage = auxiliaryCardMarkup(letter, "key-hint-card", `${root} ${letter} 輔助字型卡`);
       keyHintEl.innerHTML = `
-        <div class="key-hint-title"><strong>${letter}</strong><span>${root} 的輔助字型</span></div>
         ${cardImage || `<div class="key-hint-fallback">${root} 是重碼鍵，沒有獨立輔助字型卡。</div>`}
       `;
       keyHintEl.classList.add("show");
@@ -1969,7 +2291,7 @@
       holdTimer = window.setTimeout(() => {
         longPressTriggered = true;
         showKeyHint(letter, keyEl);
-      }, 430);
+      }, 280);
     }
 
     function finishKeyPress(letter, keyEl) {
@@ -2272,6 +2594,18 @@
 
     recordCloseButton.addEventListener("click", closeRecordPanel);
 
+    recordTableWrap.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-sort-key]");
+      if (!button) return;
+
+      const key = button.dataset.sortKey;
+      recordSort = {
+        key,
+        direction: recordSort.key === key && recordSort.direction === "desc" ? "asc" : "desc"
+      };
+      renderRecordPanel();
+    });
+
     dailyLimitSelect.addEventListener("change", () => {
       settings.dailyLimit = Number(dailyLimitSelect.value) || 10;
       saveSettings();
@@ -2325,6 +2659,7 @@
 
     renderKeyboard();
     renderQuestion();
+    warmAuxiliaryCards();
   </script>
 </body>
 </html>
