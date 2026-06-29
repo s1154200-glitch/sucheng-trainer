@@ -143,6 +143,7 @@
 
     .top-actions {
       position: relative;
+      z-index: 12;
       display: inline-flex;
       align-items: center;
       justify-content: flex-end;
@@ -154,7 +155,8 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       align-items: center;
-      padding-right: 0px;
+      justify-items: start;
+      padding-right: 0;
     }
 
     .icon-button {
@@ -187,7 +189,7 @@
 
     .settings-menu {
       position: absolute;
-      z-index: 8;
+      z-index: 14;
       top: calc(100% + 10px);
       right: 0;
       width: min(264px, calc(100vw - 44px));
@@ -546,10 +548,10 @@
       position: relative;
       z-index: 9;
       display: grid;
-      width: 100%;
-      max-width: none;
+      width: min(100%, 360px);
+      max-width: 360px;
       min-width: 0;
-      justify-self: stretch;
+      justify-self: start;
     }
 
     .search-box {
@@ -1000,9 +1002,9 @@
 
     .input-row {
       display: grid;
-      grid-template-columns: auto 58px;
+      grid-template-columns: auto;
       align-items: center;
-      gap: 10px;
+      gap: 0;
     }
 
     .slot {
@@ -1040,29 +1042,26 @@
       font-weight: 800;
     }
 
-    .delete-button {
-      width: 58px;
-      height: 58px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: inset 0 0 0 1px var(--line), 0 10px 22px rgba(25, 40, 55, 0.08);
-      color: #17202b;
-      font-size: 13px;
-      line-height: 1;
-      font-weight: 900;
-      transition: transform 140ms ease, opacity 140ms ease, background 140ms ease;
+    .key.delete-key {
+      flex-basis: min(50px, calc((100% - 54px) / 10 + 18px));
     }
 
-    .delete-button:active:not(:disabled) {
-      transform: translateY(2px) scale(0.96);
-      background: #f7fbff;
+    .key.delete-key .key-letter {
+      margin-top: 0;
+      font-size: 0;
     }
 
-    .delete-button:disabled {
+    .key-delete-icon {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.25;
+      pointer-events: none;
+      margin-top: 2px;
+    }
+
+    .key.delete-key[disabled] {
       cursor: default;
-      opacity: 0.38;
+      opacity: 0.4;
     }
 
     .answer-line {
@@ -1470,7 +1469,7 @@
     .key-letter {
       display: block;
       margin-top: 2px;
-      font-size: 18px;
+      font-size: 22px;
       line-height: 1;
       font-weight: 950;
       pointer-events: none;
@@ -1480,16 +1479,7 @@
     }
 
     .key-root {
-      display: block;
-      margin-top: -1px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1;
-      font-weight: 850;
-      pointer-events: none;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
+      display: none;
     }
 
     @keyframes wordIn {
@@ -1590,16 +1580,6 @@
 
       .slot {
         height: 50px;
-      }
-
-      .input-row {
-        grid-template-columns: auto 52px;
-      }
-
-      .delete-button {
-        width: 52px;
-        height: 50px;
-        border-radius: 16px;
       }
 
       .answer-line.show {
@@ -1715,7 +1695,6 @@
                   <div class="slot">—</div>
                   <div class="slot">—</div>
                 </div>
-                <button id="deleteButton" class="delete-button" type="button" aria-label="撤回上一個輸入">剷除</button>
               </div>
               <div id="answerLine" class="answer-line" aria-live="polite"></div>
             </div>
@@ -2135,7 +2114,6 @@
     const keyboardEl = document.getElementById("keyboard");
     const keyHintEl = document.getElementById("keyHint");
     const hintButton = document.getElementById("hintButton");
-    const deleteButton = document.getElementById("deleteButton");
     const roundText = document.getElementById("roundText");
     const settingsButton = document.getElementById("settingsButton");
     const settingsMenu = document.getElementById("settingsMenu");
@@ -2791,7 +2769,7 @@
     }
 
     function rootLabel(letter) {
-      return `${letter} ${rootText(letter)}`;
+      return rootText(letter);
     }
 
     function clearTimer() {
@@ -2813,7 +2791,9 @@
     }
 
     function updateDeleteButton() {
-      deleteButton.disabled = locked || buffer.length === 0;
+      const activeDeleteButton = document.getElementById("deleteButton");
+      if (!activeDeleteButton) return;
+      activeDeleteButton.disabled = locked || buffer.length === 0;
     }
 
     function auxiliaryGlyphUrl(id) {
@@ -3199,7 +3179,7 @@
           key.dataset.key = letter;
           if (mainRoot?.id) key.dataset.id = mainRoot.id;
           key.setAttribute("aria-label", rootLabel(letter));
-          key.innerHTML = `<span class="key-letter">${letter}</span><span class="key-root" data-id="${mainRoot?.id || ""}">${rootText(letter)}</span>`;
+          key.innerHTML = `<span class="key-letter" data-id="${mainRoot?.id || ""}">${rootText(letter)}</span>`;
           key.addEventListener("pointerdown", (event) => {
             event.preventDefault();
             startKeyPress(letter, key);
@@ -3214,8 +3194,42 @@
           rowEl.appendChild(key);
         });
 
+        if (row === KEY_ROWS[KEY_ROWS.length - 1]) {
+          const deleteKey = document.createElement("button");
+          deleteKey.className = "key delete-key";
+          deleteKey.type = "button";
+          deleteKey.id = "deleteButton";
+          deleteKey.setAttribute("aria-label", "撤回上一個輸入");
+          deleteKey.innerHTML = `
+            <span class="key-letter" aria-hidden="true"></span>
+            <svg class="key-delete-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 4H8l-5 8 5 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"></path>
+              <path d="m15 9-6 6"></path>
+              <path d="m9 9 6 6"></path>
+            </svg>
+          `;
+          deleteKey.addEventListener("pointerdown", (event) => {
+            event.preventDefault();
+            window.clearTimeout(holdTimer);
+            holdingKey = null;
+            longPressTriggered = false;
+            deleteKey.classList.add("active");
+          });
+          deleteKey.addEventListener("pointerup", (event) => {
+            event.preventDefault();
+            deleteKey.classList.remove("active");
+            deleteLastInput();
+          });
+          deleteKey.addEventListener("pointerleave", () => deleteKey.classList.remove("active"));
+          deleteKey.addEventListener("pointercancel", () => deleteKey.classList.remove("active"));
+          deleteKey.addEventListener("contextmenu", (event) => event.preventDefault());
+          rowEl.appendChild(deleteKey);
+        }
+
         keyboardEl.appendChild(rowEl);
       });
+
+      updateDeleteButton();
     }
 
     function renderBuffer(markBad = false) {
@@ -3347,7 +3361,7 @@
       const question = currentQuestion();
       locked = true;
       hintButton.disabled = true;
-      deleteButton.disabled = true;
+      updateDeleteButton();
 
       const correct = buffer[0] === question.head && buffer[1] === question.tail;
       if (correct) {
@@ -3380,7 +3394,7 @@
       hintButton.disabled = false;
       hintButton.textContent = "下一題";
       hintButton.classList.add("next");
-      deleteButton.disabled = true;
+      updateDeleteButton();
 
       if (reason === "hint" && !currentRecorded) {
         answered += 1;
@@ -3489,8 +3503,6 @@
     resetProgressButton.addEventListener("click", resetLearningProgress);
 
     learnMoreButton.addEventListener("click", learnMoreNewWords);
-
-    deleteButton.addEventListener("click", deleteLastInput);
 
     decompositionSearchForm.addEventListener("submit", (event) => {
       event.preventDefault();
