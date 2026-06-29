@@ -113,7 +113,7 @@
 
     .topbar {
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
       gap: 10px;
       min-height: 42px;
@@ -154,6 +154,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       align-items: center;
+      padding-right: 2px;
     }
 
     .icon-button {
@@ -945,6 +946,11 @@
       scrollbar-width: none;
     }
 
+    .hero.search-list-mode .word-wrap,
+    .hero.search-list-mode .prompt-meta {
+      display: none;
+    }
+
     .hero.answer-mode .character-stage::-webkit-scrollbar {
       display: none;
     }
@@ -1081,6 +1087,54 @@
 
     .answer-line.single {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .answer-line.search-list {
+      width: 100%;
+      max-width: none;
+      height: auto;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      overflow: visible;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .answer-line.search-list.show {
+      height: auto;
+      max-height: none;
+      opacity: 1;
+    }
+
+    .search-result-stack {
+      width: 100%;
+      display: grid;
+      gap: 12px;
+    }
+
+    .search-result-row {
+      width: 100%;
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: inset 0 0 0 1px rgba(21, 32, 43, 0.08), 0 10px 22px rgba(25, 40, 55, 0.06);
+    }
+
+    .search-result-char {
+      color: #17202b;
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .search-result-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+      gap: 10px;
     }
 
     .answer-card {
@@ -2028,6 +2082,10 @@
       return Array.from((value || "").trim()).find((char) => /\p{Script=Han}/u.test(char)) || "";
     }
 
+    function getHanCharacters(value) {
+      return Array.from((value || "").trim()).filter((char) => /\p{Script=Han}/u.test(char));
+    }
+
     function decomposeCharacter(char) {
       const target = getFirstHanCharacter(char);
       if (!target) {
@@ -2924,6 +2982,28 @@
       };
     }
 
+    function searchResultMarkup(result) {
+      if (!result.found) {
+        return `
+          <div class="search-result-row">
+            <div class="search-result-char">${escapeHtml(result.character || "?")}</div>
+            <div class="answer-search-empty">${escapeHtml(result.message || "查無拆碼")}</div>
+          </div>
+        `;
+      }
+
+      const searchQuestion = createSearchQuestion(result);
+      return `
+        <div class="search-result-row">
+          <div class="search-result-char">${escapeHtml(result.character)}</div>
+          <div class="search-result-cards">
+            ${answerCard("head", "頭", searchQuestion)}
+            ${answerCard("tail", "尾", searchQuestion)}
+          </div>
+        </div>
+      `;
+    }
+
     function enterSearchMode(result) {
       searchModeActive = true;
       clearTimer();
@@ -2952,10 +3032,24 @@
       answerLine.classList.add("show");
     }
 
+    function enterSearchListMode(results) {
+      searchModeActive = true;
+      clearTimer();
+      cancelKeyPress();
+      hideKeyHint();
+      locked = true;
+      answerShown = false;
+      wordEl.classList.remove("entering", "correct", "shake");
+      answerLine.className = "answer-line search-list show";
+      answerLine.innerHTML = `<div class="search-result-stack">${results.map((result) => searchResultMarkup(result)).join("")}</div>`;
+      heroEl.classList.remove("answer-mode");
+      heroEl.classList.add("search-mode", "search-list-mode");
+    }
+
     function leaveSearchMode() {
       if (!searchModeActive) return;
       searchModeActive = false;
-      heroEl.classList.remove("search-mode");
+      heroEl.classList.remove("search-mode", "search-list-mode");
       renderQuestion();
     }
 
@@ -2989,15 +3083,37 @@
       enterSearchMode(result);
     }
 
+    function renderMultiCharacterSearch() {
+      const chars = getHanCharacters(decompositionSearchInput.value);
+      decompositionSearchClear.classList.toggle("show", decompositionSearchInput.value.length > 0);
+
+      if (!chars.length) {
+        decompositionSearchResult.classList.remove("show");
+        decompositionSearchResult.innerHTML = "";
+        leaveSearchMode();
+        return;
+      }
+
+      const results = chars.map((char) => decomposeCharacter(char));
+      decompositionSearchResult.classList.remove("show");
+      decompositionSearchResult.innerHTML = "";
+
+      if (results.length === 1) {
+        renderDecompositionSearchResult(results[0]);
+        return;
+      }
+
+      enterSearchListMode(results);
+    }
+
     function runDecompositionSearch() {
-      const result = decomposeCharacter(decompositionSearchInput.value);
-      renderDecompositionSearchResult(result);
+      renderMultiCharacterSearch();
       const target = getFirstHanCharacter(decompositionSearchInput.value);
 
-      if (target && result.status === "missing" && externalCodeIndexStatus !== "ready" && externalCodeIndexStatus !== "failed") {
+      if (target && externalCodeIndexStatus !== "ready" && externalCodeIndexStatus !== "failed") {
         ensureExternalCodeIndex().then(() => {
           if (getFirstHanCharacter(decompositionSearchInput.value) === target) {
-            renderDecompositionSearchResult(decomposeCharacter(target));
+            renderMultiCharacterSearch();
           }
         });
       }
