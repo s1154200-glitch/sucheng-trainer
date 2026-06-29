@@ -145,8 +145,15 @@
       position: relative;
       display: inline-flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 8px;
       flex: 0 0 auto;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: center;
     }
 
     .icon-button {
@@ -541,7 +548,7 @@
       width: 100%;
       max-width: 184px;
       min-width: 0;
-      justify-self: center;
+      justify-self: start;
     }
 
     .search-box {
@@ -742,6 +749,7 @@
       justify-content: center;
       gap: 8px;
       min-width: 0;
+      padding-inline: 2px;
     }
 
     .memory-chip {
@@ -752,11 +760,11 @@
       align-items: center;
       justify-content: center;
       gap: 7px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.84);
+      padding: 6px 2px;
+      border-radius: 0;
+      background: transparent;
       color: var(--muted);
-      box-shadow: inset 0 0 0 1px var(--line), 0 8px 18px rgba(25, 40, 55, 0.06);
+      box-shadow: none;
       font-size: 12px;
       line-height: 1;
       font-weight: 850;
@@ -775,7 +783,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 8px 11px;
+      padding: 8px 10px;
       border-radius: 999px;
       background: rgba(31, 122, 140, 0.12);
       color: var(--brand-dark);
@@ -1582,17 +1590,6 @@
             <div class="subtitle">頭碼 · 尾碼</div>
           </div>
           <div class="top-actions">
-            <form id="decompositionSearch" class="decomposition-search" role="search" autocomplete="off">
-              <div class="search-box">
-                <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="10.5" cy="10.5" r="6.5"></circle>
-                  <path d="M15.4 15.4 21 21"></path>
-                </svg>
-                <input id="decompositionSearchInput" class="search-input" type="text" inputmode="text" maxlength="12" placeholder="" aria-label="搜尋漢字倉頡或速成碼">
-                <button id="decompositionSearchClear" class="search-clear" type="button" aria-label="清除搜尋">×</button>
-              </div>
-              <div id="decompositionSearchResult" class="decomposition-result" aria-live="polite"></div>
-            </form>
             <button id="settingsButton" class="icon-button" type="button" aria-label="設定" aria-expanded="false" aria-controls="settingsMenu">
               <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3.2"></circle>
@@ -1626,6 +1623,20 @@
             </div>
           </div>
         </header>
+
+        <div class="search-row">
+          <form id="decompositionSearch" class="decomposition-search" role="search" autocomplete="off">
+            <div class="search-box">
+              <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10.5" cy="10.5" r="6.5"></circle>
+                <path d="M15.4 15.4 21 21"></path>
+              </svg>
+              <input id="decompositionSearchInput" class="search-input" type="text" inputmode="text" maxlength="12" placeholder="" aria-label="搜尋漢字倉頡或速成碼">
+              <button id="decompositionSearchClear" class="search-clear" type="button" aria-label="清除搜尋">×</button>
+            </div>
+            <div id="decompositionSearchResult" class="decomposition-result" aria-live="polite"></div>
+          </form>
+        </div>
 
         <div class="study-strip">
           <div id="memoryText" class="memory-chip" aria-live="polite">新字 0 · 複習 0</div>
