@@ -106,45 +106,70 @@
       min-height: 0;
       position: relative;
       display: grid;
-      grid-template-rows: auto auto minmax(0, 1fr) auto;
-      gap: 10px;
-      padding: calc(env(safe-area-inset-top) + 34px) 22px 16px;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 14px;
+      padding: calc(env(safe-area-inset-top) + 28px) 20px 16px;
+    }
+
+    .hero-header {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(243, 247, 251, 0.96));
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow:
+        0 18px 34px rgba(25, 40, 55, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
     .topbar {
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 10px;
-      min-height: 42px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 14px;
+      min-height: 0;
     }
 
     .title-block {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+      min-width: 0;
+      display: grid;
+      justify-items: start;
+      align-content: start;
+      gap: 8px;
+      padding-top: 2px;
     }
 
     .title {
       margin: 0;
-      font-size: 16px;
-      line-height: 1.1;
-      letter-spacing: 0;
-      font-weight: 850;
+      font-size: 21px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      font-weight: 950;
       white-space: nowrap;
     }
 
     .subtitle {
-      display: none;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(31, 122, 140, 0.12);
+      color: var(--brand-dark);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: 0.08em;
     }
 
     .top-actions {
       position: relative;
       display: inline-flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 8px;
       flex: 0 0 auto;
     }
@@ -539,9 +564,9 @@
       z-index: 9;
       display: grid;
       width: 100%;
-      max-width: 184px;
+      max-width: 196px;
       min-width: 0;
-      justify-self: center;
+      justify-self: end;
     }
 
     .search-box {
@@ -549,21 +574,22 @@
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
-      gap: 6px;
-      padding: 0 6px 0 12px;
-      border-radius: 15px;
-      background: rgba(255, 255, 255, 0.82);
-      box-shadow: inset 0 0 0 1px var(--line), 0 9px 20px rgba(16, 23, 31, 0.1);
+      gap: 8px;
+      padding: 0 8px 0 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: inset 0 0 0 1px var(--line), 0 10px 24px rgba(16, 23, 31, 0.08);
       transition: background 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+      overflow: hidden;
     }
 
     .search-icon {
-      width: 15px;
-      height: 15px;
+      flex: 0 0 auto;
+      width: 20px;
+      height: 20px;
       color: #17202b;
-      stroke-width: 2.6;
+      stroke-width: 2.2;
       pointer-events: none;
-      opacity: 0.82;
     }
 
     .search-input {
@@ -736,28 +762,28 @@
     }
 
     .study-strip {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: stretch;
+      gap: 10px;
       min-width: 0;
     }
 
     .memory-chip {
       width: 100%;
       min-width: 0;
-      min-height: 34px;
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.84);
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 0 14px;
+      border-radius: 16px;
+      background: rgba(244, 247, 250, 0.94);
       color: var(--muted);
-      box-shadow: inset 0 0 0 1px var(--line), 0 8px 18px rgba(25, 40, 55, 0.06);
-      font-size: 12px;
-      line-height: 1;
+      box-shadow: inset 0 0 0 1px var(--line);
+      font-size: 13px;
+      line-height: 1.2;
       font-weight: 850;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -770,13 +796,13 @@
 
     .learn-more-button {
       flex: 0 0 auto;
-      min-height: 34px;
+      min-height: 44px;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 8px 11px;
-      border-radius: 999px;
-      background: rgba(31, 122, 140, 0.12);
+      padding: 0 14px;
+      border-radius: 16px;
+      background: rgba(31, 122, 140, 0.14);
       color: var(--brand-dark);
       box-shadow: inset 0 0 0 1px rgba(31, 122, 140, 0.18);
       font-size: 12px;
@@ -799,23 +825,35 @@
       min-height: 0;
       display: grid;
       place-items: center;
-      padding: 10px 0 12px;
+      padding: 0 0 10px;
     }
 
     .character-card {
       width: 100%;
       display: grid;
       justify-items: center;
-      gap: 16px;
+      gap: 18px;
     }
 
     .prompt-meta {
-      display: flex;
+      max-width: 100%;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: inset 0 0 0 1px var(--line), 0 8px 18px rgba(25, 40, 55, 0.05);
       color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .prompt-meta span:last-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .round-mark {
@@ -826,21 +864,21 @@
     }
 
     .word-wrap {
-      width: 220px;
-      height: clamp(144px, 26dvh, 224px);
+      width: min(100%, 272px);
+      height: clamp(156px, 27dvh, 232px);
       display: grid;
       place-items: center;
-      border-radius: 28px;
+      border-radius: 32px;
       background:
-        radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.42) 52%, transparent 70%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(230, 236, 243, 0.5));
-      box-shadow: var(--soft-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.78);
-      border: 1px solid rgba(255, 255, 255, 0.72);
+        radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.55) 50%, transparent 72%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(228, 236, 244, 0.62));
+      box-shadow: 0 18px 36px rgba(25, 40, 55, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
 
     .word {
       display: inline-block;
-      font-size: clamp(104px, 29dvw, 148px);
+      font-size: clamp(108px, 30dvw, 150px);
       line-height: 1;
       font-weight: 900;
       color: var(--ink);
@@ -870,13 +908,17 @@
     }
 
     .hero.answer-mode {
-      grid-template-rows: auto 0 minmax(0, 1fr) auto;
-      gap: 6px;
+      gap: 10px;
     }
 
     .hero.search-mode {
-      grid-template-rows: auto 0 minmax(0, 1fr) 0;
-      gap: 6px;
+      grid-template-rows: auto minmax(0, 1fr) 0;
+      gap: 10px;
+    }
+
+    .hero.answer-mode .hero-header,
+    .hero.search-mode .hero-header {
+      gap: 0;
     }
 
     .hero.answer-mode + .keyboard {
@@ -914,11 +956,11 @@
     }
 
     .hero.answer-mode .character-card {
-      gap: 6px;
+      gap: 10px;
     }
 
     .hero.search-mode .character-card {
-      gap: 6px;
+      gap: 10px;
     }
 
     .hero.answer-mode .character-stage {
@@ -964,13 +1006,20 @@
     }
 
     .buffer-panel {
-      width: 100%;
+      width: min(100%, 360px);
       display: grid;
-      gap: 9px;
-      justify-items: center;
+      gap: 10px;
+      justify-items: stretch;
+      padding: 14px 14px 16px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.62);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.68), 0 14px 30px rgba(25, 40, 55, 0.06);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
     .buffer-label {
+      padding-left: 4px;
       color: var(--muted);
       font-size: 12px;
       font-weight: 850;
@@ -981,13 +1030,14 @@
       grid-template-columns: repeat(2, 76px);
       gap: 10px;
       min-height: 58px;
+      justify-content: center;
     }
 
     .input-row {
       display: grid;
-      grid-template-columns: auto 58px;
+      grid-template-columns: minmax(0, 1fr) 58px;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .slot {
@@ -1509,6 +1559,15 @@
         padding-bottom: 10px;
       }
 
+      .hero-header {
+        gap: 10px;
+        padding: 13px;
+      }
+
+      .title {
+        font-size: 19px;
+      }
+
       .character-card {
         gap: 9px;
       }
@@ -1531,6 +1590,11 @@
 
       .input-row {
         grid-template-columns: auto 52px;
+      }
+
+      .memory-chip,
+      .learn-more-button {
+        min-height: 40px;
       }
 
       .delete-button {
@@ -1575,60 +1639,62 @@
   <main class="device-shell" aria-label="速成輸入法字形拆碼極速練習器">
     <section class="app">
       <div class="hero">
-        <header class="topbar">
-          <div class="title-block">
-            <h1 class="title">速成拆碼</h1>
-            <div class="subtitle">頭碼 · 尾碼</div>
-          </div>
-          <form id="decompositionSearch" class="decomposition-search" role="search" autocomplete="off">
-            <div class="search-box">
-              <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="10.5" cy="10.5" r="6.5"></circle>
-                <path d="M15.4 15.4 21 21"></path>
-              </svg>
-              <input id="decompositionSearchInput" class="search-input" type="text" inputmode="text" maxlength="12" placeholder="" aria-label="搜尋漢字倉頡或速成碼">
-              <button id="decompositionSearchClear" class="search-clear" type="button" aria-label="清除搜尋">×</button>
+        <div class="hero-header">
+          <header class="topbar">
+            <div class="title-block">
+              <h1 class="title">速成拆碼</h1>
+              <div class="subtitle">頭碼 · 尾碼</div>
             </div>
-            <div id="decompositionSearchResult" class="decomposition-result" aria-live="polite"></div>
-          </form>
-          <div class="top-actions">
-            <button id="settingsButton" class="icon-button" type="button" aria-label="設定" aria-expanded="false" aria-controls="settingsMenu">
-              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3.2"></circle>
-                <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 0 1-4 0v-.08a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 0 1 0-4h.08A1.7 1.7 0 0 0 4.6 8.94a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 10 3.08V3a2 2 0 0 1 4 0v.08a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.88 1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 0 1 0 4h-.08A1.7 1.7 0 0 0 19.4 15Z"></path>
-              </svg>
-            </button>
-            <div id="settingsMenu" class="settings-menu" aria-hidden="true">
-              <p class="settings-menu-title">設定</p>
-              <label class="settings-row" for="dailyLimit">
-                <span>每日單字量</span>
-                <select id="dailyLimit" aria-label="每日學習數量">
-                  <option value="5">5</option>
-                  <option value="10" selected>10</option>
-                  <option value="20">20</option>
-                  <option value="30">30</option>
-                  <option value="50">50</option>
-                </select>
-              </label>
-              <button id="recordButton" class="menu-button" type="button">
-                <span>學習記錄</span>
+            <div class="top-actions">
+              <form id="decompositionSearch" class="decomposition-search" role="search" autocomplete="off">
+                <div class="search-box">
+                  <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="10.5" cy="10.5" r="6.5"></circle>
+                    <path d="M15.4 15.4 21 21"></path>
+                  </svg>
+                  <input id="decompositionSearchInput" class="search-input" type="text" inputmode="text" maxlength="12" placeholder="" aria-label="搜尋漢字倉頡或速成碼">
+                  <button id="decompositionSearchClear" class="search-clear" type="button" aria-label="清除搜尋">×</button>
+                </div>
+                <div id="decompositionSearchResult" class="decomposition-result" aria-live="polite"></div>
+              </form>
+              <button id="settingsButton" class="icon-button" type="button" aria-label="設定" aria-expanded="false" aria-controls="settingsMenu">
                 <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M8 6h13"></path>
-                  <path d="M8 12h13"></path>
-                  <path d="M8 18h13"></path>
-                  <path d="M3 6h.01"></path>
-                  <path d="M3 12h.01"></path>
-                  <path d="M3 18h.01"></path>
+                  <circle cx="12" cy="12" r="3.2"></circle>
+                  <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 0 1-4 0v-.08a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 0 1 0-4h.08A1.7 1.7 0 0 0 4.6 8.94a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 10 3.08V3a2 2 0 0 1 4 0v.08a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.88 1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 0 1 0 4h-.08A1.7 1.7 0 0 0 19.4 15Z"></path>
                 </svg>
               </button>
-              <button id="resetProgressButton" class="reset-button" type="button">重設學習紀錄</button>
+              <div id="settingsMenu" class="settings-menu" aria-hidden="true">
+                <p class="settings-menu-title">設定</p>
+                <label class="settings-row" for="dailyLimit">
+                  <span>每日單字量</span>
+                  <select id="dailyLimit" aria-label="每日學習數量">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                  </select>
+                </label>
+                <button id="recordButton" class="menu-button" type="button">
+                  <span>學習記錄</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 6h13"></path>
+                    <path d="M8 12h13"></path>
+                    <path d="M8 18h13"></path>
+                    <path d="M3 6h.01"></path>
+                    <path d="M3 12h.01"></path>
+                    <path d="M3 18h.01"></path>
+                  </svg>
+                </button>
+                <button id="resetProgressButton" class="reset-button" type="button">重設學習紀錄</button>
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <div class="study-strip">
-          <div id="memoryText" class="memory-chip" aria-live="polite">新字 0 · 複習 0</div>
-          <button id="learnMoreButton" class="learn-more-button" type="button">學更多新字</button>
+          <div class="study-strip">
+            <div id="memoryText" class="memory-chip" aria-live="polite">新字 0 · 複習 0</div>
+            <button id="learnMoreButton" class="learn-more-button" type="button">學更多新字</button>
+          </div>
         </div>
 
         <section class="character-stage">
@@ -3386,6 +3452,7 @@
         closeRecordPanel();
         closeSettingsMenu();
         hideKeyHint();
+        clearDecompositionSearch();
         return;
       }
 
