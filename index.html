@@ -1043,25 +1043,20 @@
     }
 
     .key.delete-key {
-      flex-basis: min(50px, calc((100% - 54px) / 10 + 18px));
-    }
-
-    .key.delete-key .key-letter {
-      margin-top: 0;
-      font-size: 0;
+      flex: 0 0 min(46px, calc((100% - 54px) / 10 + 14px));
     }
 
     .key-delete-icon {
-      width: 18px;
-      height: 18px;
+      width: 19px;
+      height: 19px;
       stroke-width: 2.25;
       pointer-events: none;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
     .key.delete-key[disabled] {
       cursor: default;
-      opacity: 0.4;
+      opacity: 0.42;
     }
 
     .answer-line {
@@ -1374,7 +1369,7 @@
 
     .keyboard {
       position: relative;
-      padding: 14px 9px calc(env(safe-area-inset-bottom) + 12px);
+      padding: 14px 10px calc(env(safe-area-inset-bottom) + 12px);
       background:
         linear-gradient(180deg, rgba(235, 241, 247, 0.96), #d8e0e8),
         #dce4ec;
@@ -1428,7 +1423,7 @@
     .key-row {
       display: flex;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
       margin-bottom: 7px;
     }
 
@@ -1437,7 +1432,7 @@
     }
 
     .key {
-      flex: 0 0 min(32px, calc((100% - 54px) / 10));
+      flex: 0 0 min(31px, calc((100% - 45px) / 10));
       min-width: 0;
       height: 48px;
       display: grid;
@@ -1468,8 +1463,8 @@
 
     .key-letter {
       display: block;
-      margin-top: 2px;
-      font-size: 22px;
+      margin-top: 0;
+      font-size: 21px;
       line-height: 1;
       font-weight: 950;
       pointer-events: none;
@@ -1600,6 +1595,15 @@
 
       .key {
         height: 43px;
+      }
+
+      .key-letter {
+        font-size: 19px;
+      }
+
+      .key-delete-icon {
+        width: 18px;
+        height: 18px;
       }
     }
 
@@ -3201,11 +3205,10 @@
           deleteKey.id = "deleteButton";
           deleteKey.setAttribute("aria-label", "撤回上一個輸入");
           deleteKey.innerHTML = `
-            <span class="key-letter" aria-hidden="true"></span>
             <svg class="key-delete-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 4H8l-5 8 5 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"></path>
-              <path d="m15 9-6 6"></path>
-              <path d="m9 9 6 6"></path>
+              <path d="M21 5.5H9.2a2 2 0 0 0-1.6.8L3 12l4.6 5.7a2 2 0 0 0 1.6.8H21a1 1 0 0 0 1-1v-11a1 1 0 0 0-1-1Z"></path>
+              <path d="m15.8 9.4-5.2 5.2"></path>
+              <path d="m10.6 9.4 5.2 5.2"></path>
             </svg>
           `;
           deleteKey.addEventListener("pointerdown", (event) => {
