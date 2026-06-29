@@ -1043,20 +1043,50 @@
     }
 
     .key.delete-key {
-      flex: 0 0 min(46px, calc((100% - 54px) / 10 + 14px));
+      flex: 0 0 min(56px, calc((100% - 45px) / 10 + 25px));
+      color: #17202b;
     }
 
     .key-delete-icon {
-      width: 19px;
-      height: 19px;
-      stroke-width: 2.25;
+      width: 26px;
+      height: 26px;
+      stroke-width: 2.15;
       pointer-events: none;
-      margin-top: 1px;
+      margin-top: 0;
+    }
+
+    .key-delete-shape {
+      fill: transparent;
+      transition: fill 92ms ease;
+    }
+
+    .key-delete-cross {
+      transition: stroke 92ms ease;
+    }
+
+    .key.delete-key:active,
+    .key.delete-key.active {
+      transform: none;
+      background: var(--key);
+      color: #17202b;
+      box-shadow:
+        0 3px 0 var(--key-deep),
+        0 8px 16px rgba(25, 40, 55, 0.13);
+    }
+
+    .key.delete-key:active .key-delete-shape,
+    .key.delete-key.active .key-delete-shape {
+      fill: #17202b;
+    }
+
+    .key.delete-key:active .key-delete-cross,
+    .key.delete-key.active .key-delete-cross {
+      stroke: #ffffff;
     }
 
     .key.delete-key[disabled] {
       cursor: default;
-      opacity: 0.42;
+      opacity: 1;
     }
 
     .answer-line {
@@ -1602,8 +1632,8 @@
       }
 
       .key-delete-icon {
-        width: 18px;
-        height: 18px;
+        width: 24px;
+        height: 24px;
       }
     }
 
@@ -3206,9 +3236,9 @@
           deleteKey.setAttribute("aria-label", "撤回上一個輸入");
           deleteKey.innerHTML = `
             <svg class="key-delete-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 5.5H9.2a2 2 0 0 0-1.6.8L3 12l4.6 5.7a2 2 0 0 0 1.6.8H21a1 1 0 0 0 1-1v-11a1 1 0 0 0-1-1Z"></path>
-              <path d="m15.8 9.4-5.2 5.2"></path>
-              <path d="m10.6 9.4 5.2 5.2"></path>
+              <path class="key-delete-shape" d="M21 5.5H9.2a2 2 0 0 0-1.6.8L3 12l4.6 5.7a2 2 0 0 0 1.6.8H21a1 1 0 0 0 1-1v-11a1 1 0 0 0-1-1Z"></path>
+              <path class="key-delete-cross" d="m15.8 9.4-5.2 5.2"></path>
+              <path class="key-delete-cross" d="m10.6 9.4 5.2 5.2"></path>
             </svg>
           `;
           deleteKey.addEventListener("pointerdown", (event) => {
