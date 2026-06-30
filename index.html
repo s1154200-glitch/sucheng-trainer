@@ -747,64 +747,57 @@
     }
 
     .study-strip {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 7px;
       min-width: 0;
-      padding-inline: 2px;
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
     }
 
-    .memory-chip {
-      width: 100%;
+    .study-stats {
+      display: contents;
+    }
+
+    .study-stat {
       min-width: 0;
-      min-height: 34px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 6px 2px;
-      border-radius: 0;
-      background: transparent;
-      color: var(--muted);
-      box-shadow: none;
-      font-size: 12px;
-      line-height: 1;
-      font-weight: 850;
+      min-height: 44px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      padding: 7px 8px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.46);
+      color: #17202b;
+      box-shadow: inset 0 0 0 1px rgba(21, 32, 43, 0.055);
+    }
+
+    .study-stat-label,
+    .study-stat-value {
+      min-width: 0;
+      display: block;
       overflow: hidden;
+      text-align: center;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .study-strip.learn-more-ready .memory-chip {
-      justify-content: flex-start;
+    .study-stat-label {
+      color: rgba(109, 116, 128, 0.86);
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 850;
     }
 
-    .learn-more-button {
-      flex: 0 0 auto;
-      min-height: 34px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(31, 122, 140, 0.12);
-      color: var(--brand-dark);
-      box-shadow: inset 0 0 0 1px rgba(31, 122, 140, 0.18);
-      font-size: 12px;
+    .study-stat-value {
+      color: #17202b;
+      font-size: 15px;
       line-height: 1;
       font-weight: 950;
-      white-space: nowrap;
-      transition: transform 150ms ease, background 150ms ease;
-    }
-
-    .learn-more-button.show {
-      display: inline-flex;
-    }
-
-    .learn-more-button:active {
-      transform: scale(0.97) translateY(1px);
-      background: rgba(31, 122, 140, 0.18);
+      letter-spacing: -0.01em;
     }
 
     .character-stage {
@@ -821,33 +814,18 @@
       gap: 16px;
     }
 
-    .prompt-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .round-mark {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--brand);
-    }
-
     .word-wrap {
-      width: 220px;
-      height: clamp(144px, 26dvh, 224px);
+      width: 100%;
+      height: clamp(132px, 24dvh, 196px);
+      position: relative;
       display: grid;
       place-items: center;
-      border-radius: 28px;
+      border-radius: 26px;
       background:
-        radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.42) 52%, transparent 70%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(230, 236, 243, 0.5));
-      box-shadow: var(--soft-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.78);
-      border: 1px solid rgba(255, 255, 255, 0.72);
+        radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.2) 58%, transparent 76%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(230, 236, 243, 0.22));
+      box-shadow: inset 0 0 0 1px rgba(21, 32, 43, 0.045);
+      border: 0;
     }
 
     .word {
@@ -857,9 +835,30 @@
       font-weight: 900;
       color: var(--ink);
       text-align: center;
-      text-shadow: 0 10px 26px rgba(30, 43, 57, 0.16);
+      text-shadow: 0 8px 20px rgba(30, 43, 57, 0.1);
       transform-origin: center;
       will-change: transform, color;
+    }
+
+    .word-rank {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      min-width: 44px;
+      min-height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      color: rgba(109, 116, 128, 0.92);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .word-rank[hidden] {
+      display: none;
     }
 
     .word.entering {
@@ -949,8 +948,7 @@
       scrollbar-width: none;
     }
 
-    .hero.search-list-mode .word-wrap,
-    .hero.search-list-mode .prompt-meta {
+    .hero.search-list-mode .word-wrap {
       display: none;
     }
 
@@ -960,14 +958,6 @@
 
     .hero.search-mode .character-stage::-webkit-scrollbar {
       display: none;
-    }
-
-    .hero.answer-mode .prompt-meta {
-      font-size: 12px;
-    }
-
-    .hero.search-mode .prompt-meta {
-      font-size: 12px;
     }
 
     .hero.answer-mode .buffer-label,
@@ -1172,7 +1162,6 @@
     }
 
     .answer-mode .word-wrap {
-      width: min(58vw, 228px);
       height: clamp(144px, 24dvh, 184px);
     }
 
@@ -1181,7 +1170,6 @@
     }
 
     .search-mode .word-wrap {
-      width: min(58vw, 228px);
       height: clamp(144px, 24dvh, 184px);
     }
 
@@ -1575,10 +1563,6 @@
       .app {
         border-radius: 0;
       }
-
-      .word-wrap {
-        width: min(58vw, 228px);
-      }
     }
 
     @media (max-height: 720px) {
@@ -1706,19 +1690,27 @@
           </form>
         </div>
 
-        <div class="study-strip">
-          <div id="memoryText" class="memory-chip" aria-live="polite">新字 0 · 複習 0</div>
-          <button id="learnMoreButton" class="learn-more-button" type="button">學更多新字</button>
+        <div class="study-strip" aria-live="polite">
+          <div id="memoryText" class="study-stats">
+            <span class="study-stat">
+              <span class="study-stat-label">今日新字</span>
+              <span class="study-stat-value" data-study-stat="new">0/10</span>
+            </span>
+            <span class="study-stat">
+              <span class="study-stat-label">待複習</span>
+              <span class="study-stat-value" data-study-stat="review">0</span>
+            </span>
+            <span class="study-stat">
+              <span class="study-stat-label">總已學</span>
+              <span class="study-stat-value" data-study-stat="learned">0</span>
+            </span>
+          </div>
         </div>
 
         <section class="character-stage">
           <div class="character-card">
-            <div class="prompt-meta">
-              <span class="round-mark"></span>
-              <span id="roundText">今日已練 0 次</span>
-            </div>
-
             <div class="word-wrap" aria-live="polite">
+              <div id="roundRank" class="word-rank">#1</div>
               <div id="word" class="word">我</div>
             </div>
 
@@ -2148,7 +2140,7 @@
     const keyboardEl = document.getElementById("keyboard");
     const keyHintEl = document.getElementById("keyHint");
     const hintButton = document.getElementById("hintButton");
-    const roundText = document.getElementById("roundText");
+    const roundRank = document.getElementById("roundRank");
     const settingsButton = document.getElementById("settingsButton");
     const settingsMenu = document.getElementById("settingsMenu");
     const dailyLimitSelect = document.getElementById("dailyLimit");
@@ -2161,7 +2153,9 @@
     const recordTableWrap = document.getElementById("recordTableWrap");
     const studyStrip = document.querySelector(".study-strip");
     const memoryText = document.getElementById("memoryText");
-    const learnMoreButton = document.getElementById("learnMoreButton");
+    const studyNewStat = document.querySelector('[data-study-stat="new"]');
+    const studyReviewStat = document.querySelector('[data-study-stat="review"]');
+    const studyLearnedStat = document.querySelector('[data-study-stat="learned"]');
     const decompositionSearchForm = document.getElementById("decompositionSearch");
     const decompositionSearchInput = document.getElementById("decompositionSearchInput");
     const decompositionSearchClear = document.getElementById("decompositionSearchClear");
@@ -2504,19 +2498,38 @@
       return Math.min(Math.max(0, maxBonus - currentBonus), remainingNewWords);
     }
 
+    function updateCompletedActionButton(today = dailyRecord()) {
+      const canLearnMore = canLearnMoreToday(today);
+      hintButton.disabled = !canLearnMore;
+      hintButton.textContent = canLearnMore ? "學更多新字" : "已完成今日任務";
+      hintButton.classList.remove("next");
+      hintButton.dataset.action = canLearnMore ? "learn-more" : "complete";
+    }
+
     function updateMemoryText() {
       const today = dailyRecord();
       const learnedCount = Object.keys(progress.learned).length;
       const dueCount = countDueReviews();
       const learnedToday = todayIntroducedLearnedCount(today);
-      const showLearnMore = canLearnMoreToday(today);
       const completed = isDailyTaskComplete(today);
-      const nextDue = nextDueReviewTime();
-      memoryText.textContent = completed
-        ? `已完成今日任務 · 下次複習 ${Number.isFinite(nextDue) ? formatDateTime(nextDue) : "無"}`
-        : `新字 ${learnedToday}/${todayNewLimit(today)} · 複習 ${dueCount} · 已學 ${learnedCount}`;
-      learnMoreButton.classList.toggle("show", showLearnMore);
-      studyStrip.classList.toggle("learn-more-ready", showLearnMore);
+
+      if (studyNewStat) {
+        studyNewStat.textContent = completed ? "完成" : `${learnedToday}/${todayNewLimit(today)}`;
+      }
+      if (studyReviewStat) {
+        studyReviewStat.textContent = dueCount > 0 ? String(dueCount) : "0";
+      }
+      if (studyLearnedStat) {
+        studyLearnedStat.textContent = String(learnedCount);
+      }
+
+      memoryText.setAttribute(
+        "aria-label",
+        completed
+          ? `已完成今日任務，待複習 ${dueCount}，總已學 ${learnedCount}`
+          : `今日新字 ${learnedToday}/${todayNewLimit(today)}，待複習 ${dueCount}，總已學 ${learnedCount}`
+      );
+      studyStrip.classList.toggle("is-complete", completed);
       today.completed = completed;
     }
 
@@ -3291,12 +3304,14 @@
       const question = currentQuestion();
       if (!question) {
         const today = dailyRecord();
-        roundText.textContent = today.completed ? `已完成今日任務` : `今日任務進行中`;
+        if (roundRank) roundRank.hidden = true;
         updateMemoryText();
         return;
       }
-      const today = dailyRecord();
-      roundText.textContent = `${todayDisplayText()} · 今日已練 ${today.practiceCount} 次 · 常用字 #${question.rank}`;
+      if (roundRank) {
+        roundRank.hidden = false;
+        roundRank.textContent = `#${question.rank}`;
+      }
       updateMemoryText();
     }
 
@@ -3318,9 +3333,6 @@
         locked = true;
         answerShown = false;
         currentRecorded = false;
-        hintButton.disabled = true;
-        hintButton.textContent = "已完成今日任務";
-        hintButton.classList.remove("next");
         heroEl.classList.remove("answer-mode");
         wordEl.className = "word complete";
         wordEl.textContent = "完成";
@@ -3329,6 +3341,7 @@
         answerLine.innerHTML = "";
         renderBuffer();
         updateScore();
+        updateCompletedActionButton();
         document.querySelectorAll(".key").forEach((key) => key.classList.remove("active"));
         return;
       }
@@ -3339,6 +3352,7 @@
       hintButton.disabled = false;
       hintButton.textContent = "不會回答 / 提示";
       hintButton.classList.remove("next");
+      hintButton.dataset.action = "hint";
       heroEl.classList.remove("answer-mode");
       wordEl.className = "word";
       renderWord(question);
@@ -3427,6 +3441,7 @@
       hintButton.disabled = false;
       hintButton.textContent = "下一題";
       hintButton.classList.add("next");
+      hintButton.dataset.action = "next";
       updateDeleteButton();
 
       if (reason === "hint" && !currentRecorded) {
@@ -3483,6 +3498,10 @@
 
     hintButton.addEventListener("click", () => {
       if (searchModeActive) return;
+      if (hintButton.dataset.action === "learn-more") {
+        learnMoreNewWords();
+        return;
+      }
       if (answerShown) {
         nextQuestion();
         return;
@@ -3534,8 +3553,6 @@
     });
 
     resetProgressButton.addEventListener("click", resetLearningProgress);
-
-    learnMoreButton.addEventListener("click", learnMoreNewWords);
 
     decompositionSearchForm.addEventListener("submit", (event) => {
       event.preventDefault();
