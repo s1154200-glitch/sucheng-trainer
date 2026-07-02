@@ -250,6 +250,39 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    .settings-toggle {
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+      padding: 3px;
+      border-radius: 14px;
+      background: rgba(23, 32, 43, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(21, 32, 43, 0.05);
+    }
+
+    .settings-toggle button {
+      min-width: 54px;
+      min-height: 30px;
+      padding: 0 9px;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 950;
+      transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+
+    .settings-toggle button[aria-pressed="true"] {
+      background: #17202b;
+      color: #ffffff;
+      box-shadow: 0 6px 14px rgba(16, 23, 31, 0.13);
+    }
+
+    .settings-toggle button:active {
+      transform: scale(0.96);
+    }
+
     .menu-button {
       width: 100%;
       min-height: 46px;
@@ -542,6 +575,177 @@
       line-height: 1.45;
       font-weight: 850;
       text-align: center;
+    }
+
+    .dictionary-panel {
+      z-index: 11;
+    }
+
+    .dictionary-sheet {
+      max-height: min(84dvh, 720px);
+      grid-template-rows: auto auto auto minmax(0, 1fr);
+    }
+
+    .dictionary-add-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .dictionary-add-input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      padding: 0 13px;
+      border-radius: 16px;
+      background: #ffffff;
+      color: var(--ink);
+      box-shadow: inset 0 0 0 1px var(--line);
+      font: inherit;
+      font-size: 15px;
+      line-height: 46px;
+      font-weight: 850;
+    }
+
+    .dictionary-add-button,
+    .dictionary-action-button {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 13px;
+      border-radius: 16px;
+      background: #17202b;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 950;
+      box-shadow: 0 10px 20px rgba(16, 23, 31, 0.14);
+      transition: transform 150ms ease, background 150ms ease;
+    }
+
+    .dictionary-add-button:active,
+    .dictionary-action-button:active {
+      transform: scale(0.98) translateY(1px);
+      background: #222d39;
+    }
+
+    .dictionary-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .dictionary-action-button {
+      min-width: 0;
+      min-height: 40px;
+      padding: 0 8px;
+      background: rgba(31, 122, 140, 0.1);
+      color: var(--brand-dark);
+      box-shadow: inset 0 0 0 1px rgba(31, 122, 140, 0.16);
+    }
+
+    .dictionary-action-button.is-danger {
+      background: rgba(232, 75, 95, 0.1);
+      color: var(--danger);
+      box-shadow: inset 0 0 0 1px rgba(232, 75, 95, 0.18);
+    }
+
+    .dictionary-status {
+      min-height: 18px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .dictionary-list-wrap {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .dictionary-list-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .dictionary-char-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+      align-content: start;
+      gap: 7px;
+      overflow: auto;
+      padding: 10px;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .dictionary-char-grid .record-empty {
+      grid-column: 1 / -1;
+    }
+
+    .dictionary-token {
+      min-width: 0;
+      height: 58px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      gap: 2px;
+      padding: 7px 18px 7px 8px;
+      border-radius: 16px;
+      background: rgba(245, 248, 251, 0.96);
+      color: #17202b;
+      box-shadow: inset 0 0 0 1px rgba(21, 32, 43, 0.07);
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    .dictionary-token:active {
+      transform: scale(0.97);
+      background: rgba(232, 75, 95, 0.1);
+    }
+
+    .dictionary-token-char {
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .dictionary-token-meta {
+      max-width: 100%;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 850;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dictionary-token-delete {
+      position: absolute;
+      top: 5px;
+      right: 7px;
+      color: rgba(232, 75, 95, 0.88);
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .dictionary-import-input {
+      display: none;
     }
 
     .decomposition-search {
@@ -1660,6 +1864,13 @@
                   <option value="50">50</option>
                 </select>
               </label>
+              <div class="settings-row">
+                <span>出字順序</span>
+                <div class="settings-toggle" role="group" aria-label="每日出字順序">
+                  <button id="orderRankButton" type="button" data-order-mode="rank" aria-pressed="true">Rank</button>
+                  <button id="orderRandomButton" type="button" data-order-mode="random" aria-pressed="false">隨機</button>
+                </div>
+              </div>
               <button id="recordButton" class="menu-button" type="button">
                 <span>學習記錄</span>
                 <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -1669,6 +1880,15 @@
                   <path d="M3 6h.01"></path>
                   <path d="M3 12h.01"></path>
                   <path d="M3 18h.01"></path>
+                </svg>
+              </button>
+              <button id="editDictionaryButton" class="menu-button" type="button">
+                <span>編輯詞庫</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path>
+                  <path d="M9 7h7"></path>
+                  <path d="M9 11h5"></path>
                 </svg>
               </button>
               <button id="resetProgressButton" class="reset-button" type="button">重設學習紀錄</button>
@@ -1750,6 +1970,42 @@
         </div>
         <div id="recordSummary" class="record-summary" aria-live="polite"></div>
         <div id="recordTableWrap" class="record-table-wrap"></div>
+      </div>
+    </section>
+    <section id="dictionaryPanel" class="record-panel dictionary-panel" aria-hidden="true">
+      <div class="record-sheet dictionary-sheet" role="dialog" aria-modal="true" aria-labelledby="dictionaryTitle">
+        <div class="record-header">
+          <div>
+            <h2 id="dictionaryTitle" class="record-title">編輯詞庫</h2>
+            <div id="dictionarySubtitle" class="record-subtitle">內建 Rank 詞庫</div>
+          </div>
+          <button id="dictionaryCloseButton" class="record-close" type="button" aria-label="關閉詞庫編輯">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <form id="dictionaryAddForm" class="dictionary-add-row" autocomplete="off">
+          <input id="dictionaryAddInput" class="dictionary-add-input" type="text" inputmode="text" maxlength="40" aria-label="新增詞庫漢字">
+          <button class="dictionary-add-button" type="submit">添加</button>
+        </form>
+        <div>
+          <div class="dictionary-actions">
+            <button id="dictionaryExportButton" class="dictionary-action-button" type="button">輸出 JSON</button>
+            <button id="dictionaryImportButton" class="dictionary-action-button" type="button">輸入 JSON</button>
+            <button id="dictionaryResetButton" class="dictionary-action-button is-danger" type="button">還原預設</button>
+          </div>
+          <div id="dictionaryStatus" class="dictionary-status" aria-live="polite"></div>
+          <input id="dictionaryImportInput" class="dictionary-import-input" type="file" accept="application/json,.json">
+        </div>
+        <div class="dictionary-list-wrap">
+          <div class="dictionary-list-head">
+            <span id="dictionaryCountLabel">0 個字</span>
+            <span>點擊字卡即可剷除</span>
+          </div>
+          <div id="dictionaryList" class="dictionary-char-grid" aria-live="polite"></div>
+        </div>
       </div>
     </section>
   </main>
@@ -2034,16 +2290,20 @@
       };
     }
 
-    const DICTIONARY = SOURCE_CHARACTERS
+    const BUILT_IN_DICTIONARY = SOURCE_CHARACTERS
       .map((item) => {
         const codeInfo = CODE_BY_CHARACTER[item.character];
         if (!codeInfo) return null;
         return normalizeDictionaryEntry(item, codeInfo);
       })
       .filter(Boolean)
-      .sort((a, b) => a.rank - b.rank);
-    const DICTIONARY_BY_CHARACTER = Object.fromEntries(DICTIONARY.map((item) => [item.char, item]));
-    const DICTIONARY_CHAR_SET = new Set(DICTIONARY.map((item) => item.char));
+      .sort((a, b) => dictionaryRankValue(a) - dictionaryRankValue(b));
+    const BUILT_IN_DICTIONARY_BY_CHARACTER = Object.fromEntries(BUILT_IN_DICTIONARY.map((item) => [item.char, item]));
+    const BUILT_IN_DICTIONARY_CHARS = BUILT_IN_DICTIONARY.map((item) => item.char);
+
+    let DICTIONARY = [];
+    let DICTIONARY_BY_CHARACTER = {};
+    let DICTIONARY_CHAR_SET = new Set();
 
     function codeInfoForCharacter(character) {
       const builtIn = CODE_BY_CHARACTER[character];
@@ -2130,6 +2390,7 @@
 
     const STORAGE_KEY = "suchengTrainerSrs.v2";
     const SETTINGS_KEY = "suchengTrainerSettings.v1";
+    const DICTIONARY_KEY = "suchengTrainerDictionary.v1";
     const DAY_MS = 24 * 60 * 60 * 1000;
     const REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30, 60, 120];
     const LEARNING_STEPS_CORRECT_NEEDED = 2;
@@ -2146,13 +2407,28 @@
     const settingsButton = document.getElementById("settingsButton");
     const settingsMenu = document.getElementById("settingsMenu");
     const dailyLimitSelect = document.getElementById("dailyLimit");
+    const orderRankButton = document.getElementById("orderRankButton");
+    const orderRandomButton = document.getElementById("orderRandomButton");
     const recordButton = document.getElementById("recordButton");
+    const editDictionaryButton = document.getElementById("editDictionaryButton");
     const resetProgressButton = document.getElementById("resetProgressButton");
     const recordPanel = document.getElementById("recordPanel");
     const recordCloseButton = document.getElementById("recordCloseButton");
     const recordSubtitle = document.getElementById("recordSubtitle");
     const recordSummary = document.getElementById("recordSummary");
     const recordTableWrap = document.getElementById("recordTableWrap");
+    const dictionaryPanel = document.getElementById("dictionaryPanel");
+    const dictionaryCloseButton = document.getElementById("dictionaryCloseButton");
+    const dictionarySubtitle = document.getElementById("dictionarySubtitle");
+    const dictionaryAddForm = document.getElementById("dictionaryAddForm");
+    const dictionaryAddInput = document.getElementById("dictionaryAddInput");
+    const dictionaryExportButton = document.getElementById("dictionaryExportButton");
+    const dictionaryImportButton = document.getElementById("dictionaryImportButton");
+    const dictionaryImportInput = document.getElementById("dictionaryImportInput");
+    const dictionaryResetButton = document.getElementById("dictionaryResetButton");
+    const dictionaryStatus = document.getElementById("dictionaryStatus");
+    const dictionaryCountLabel = document.getElementById("dictionaryCountLabel");
+    const dictionaryList = document.getElementById("dictionaryList");
     const studyStrip = document.querySelector(".study-strip");
     const memoryText = document.getElementById("memoryText");
     const studyNewStat = document.querySelector('[data-study-stat="new"]');
@@ -2164,6 +2440,8 @@
     const decompositionSearchResult = document.getElementById("decompositionSearchResult");
 
     let settings = loadSettings();
+    let dictionaryState = loadDictionaryState();
+    rebuildActiveDictionary();
     let progress = loadProgress();
     let order = createQuestionOrder();
     let index = 0;
@@ -2189,6 +2467,7 @@
     let lastShownItemIndex = -1;
 
     dailyLimitSelect.value = String(settings.dailyLimit);
+    syncOrderModeButtons();
 
     function todayKey(time = Date.now()) {
       const date = new Date(time);
@@ -2222,14 +2501,168 @@
       }
     }
 
+    function storageRemove(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch {
+        // Practice still works if the browser blocks local storage.
+      }
+    }
+
     function loadSettings() {
       const saved = safeJsonParse(storageGet(SETTINGS_KEY), {});
       const dailyLimit = Number(saved.dailyLimit) || 10;
-      return { dailyLimit: Math.min(50, Math.max(5, dailyLimit)) };
+      const orderMode = saved.orderMode === "random" ? "random" : "rank";
+      return {
+        dailyLimit: Math.min(50, Math.max(5, dailyLimit)),
+        orderMode
+      };
     }
 
     function saveSettings() {
       storageSet(SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    function dictionaryRankValue(item) {
+      const rank = Number(item?.rank);
+      return Number.isFinite(rank) ? rank : Infinity;
+    }
+
+    function compareDictionaryEntries(a, b) {
+      if (dictionaryState?.source === "custom") {
+        return (a.customOrder || 0) - (b.customOrder || 0) || a.char.localeCompare(b.char, "zh-Hant");
+      }
+
+      const aRank = dictionaryRankValue(a);
+      const bRank = dictionaryRankValue(b);
+      if (aRank !== bRank) return aRank < bRank ? -1 : 1;
+      return (a.customOrder || 0) - (b.customOrder || 0) || a.char.localeCompare(b.char, "zh-Hant");
+    }
+
+    function defaultDictionaryState() {
+      return { source: "builtin", characters: null };
+    }
+
+    function loadDictionaryState() {
+      const saved = safeJsonParse(storageGet(DICTIONARY_KEY), null);
+      if (!saved || typeof saved !== "object") return defaultDictionaryState();
+
+      const source = saved.source === "custom" ? "custom" : saved.source === "edited" ? "edited" : "builtin";
+      const characters = normalizeDictionaryCharacters(saved.characters || saved.words || saved.items || []);
+
+      if (source === "builtin" || !characters.length) return defaultDictionaryState();
+      return { source, characters };
+    }
+
+    function saveDictionaryState() {
+      if (dictionaryState.source === "builtin") {
+        storageRemove(DICTIONARY_KEY);
+        return;
+      }
+
+      storageSet(DICTIONARY_KEY, JSON.stringify({
+        version: 1,
+        source: dictionaryState.source,
+        characters: currentDictionaryCharacters()
+      }));
+    }
+
+    function extractDictionaryCharacter(item) {
+      if (typeof item === "string") return item;
+      if (!item || typeof item !== "object") return "";
+      return item.char || item.character || item.text || item.word || "";
+    }
+
+    function normalizeDictionaryCharacters(value) {
+      const source = typeof value === "string"
+        ? Array.from(value)
+        : Array.isArray(value)
+          ? value.flatMap((item) => Array.from(String(extractDictionaryCharacter(item))))
+          : [];
+      const seen = new Set();
+      return source
+        .filter((char) => /\p{Script=Han}/u.test(char))
+        .filter((char) => {
+          if (seen.has(char)) return false;
+          seen.add(char);
+          return true;
+        });
+    }
+
+    function charactersFromDictionaryPayload(payload) {
+      if (Array.isArray(payload) || typeof payload === "string") return normalizeDictionaryCharacters(payload);
+      if (!payload || typeof payload !== "object") return [];
+      return normalizeDictionaryCharacters(payload.characters || payload.words || payload.items || payload.dictionary || "");
+    }
+
+    function currentDictionaryCharacters() {
+      return dictionaryState.source === "builtin"
+        ? [...BUILT_IN_DICTIONARY_CHARS]
+        : [...(dictionaryState.characters || [])];
+    }
+
+    function customEntryFromCodeInfo(char, codeInfo, customOrder = 0, source = "edited") {
+      return {
+        character: char,
+        char,
+        head: codeInfo.head,
+        tail: codeInfo.tail,
+        code: codeInfo.code,
+        customOrder,
+        source,
+        sourceLabel: codeInfo.sourceLabel || "自訂詞庫",
+        answerText: {
+          head: `${rootText(codeInfo.head)}：${rootText(codeInfo.head)}`,
+          tail: `${rootText(codeInfo.tail)}：${rootText(codeInfo.tail)}`
+        },
+        decomposition: {
+          source: "cangjie-code-index",
+          confidence: "code",
+          parts: [
+            createDecompositionPart("head", codeInfo.head, "", ""),
+            createDecompositionPart("tail", codeInfo.tail, "", "")
+          ]
+        }
+      };
+    }
+
+    function customEntryFromBuiltIn(item, customOrder = 0) {
+      const { rank, count, ...entry } = item;
+      return {
+        ...entry,
+        customOrder,
+        source: "custom"
+      };
+    }
+
+    function dictionaryEntryForCharacter(char, customOrder = 0) {
+      const builtIn = BUILT_IN_DICTIONARY_BY_CHARACTER[char];
+      if (builtIn && dictionaryState.source !== "custom") return builtIn;
+      if (builtIn && dictionaryState.source === "custom") return customEntryFromBuiltIn(builtIn, customOrder);
+
+      const codeInfo = codeInfoForCharacter(char);
+      if (!codeInfo) return null;
+      return customEntryFromCodeInfo(char, codeInfo, customOrder, dictionaryState.source);
+    }
+
+    function rebuildActiveDictionary() {
+      const characters = currentDictionaryCharacters();
+      DICTIONARY = characters
+        .map((char, customOrder) => dictionaryEntryForCharacter(char, customOrder))
+        .filter(Boolean)
+        .sort(compareDictionaryEntries);
+      DICTIONARY_BY_CHARACTER = Object.fromEntries(DICTIONARY.map((item) => [item.char, item]));
+      DICTIONARY_CHAR_SET = new Set(DICTIONARY.map((item) => item.char));
+    }
+
+    function useRandomDailyOrder() {
+      return dictionaryState.source === "custom" || settings.orderMode === "random";
+    }
+
+    function syncOrderModeButtons() {
+      const random = settings.orderMode === "random";
+      orderRankButton.setAttribute("aria-pressed", random ? "false" : "true");
+      orderRandomButton.setAttribute("aria-pressed", random ? "true" : "false");
     }
 
     function loadProgress() {
@@ -2320,6 +2753,24 @@
       return progress.daily[key];
     }
 
+    function resetTodayQueueForDictionaryChange() {
+      const today = dailyRecord();
+      today.introduced = [];
+      today.bonusLimit = 0;
+      today.completed = false;
+      saveProgress();
+    }
+
+    function resetUnseenTodayQueueForOrderChange() {
+      const today = dailyRecord();
+      today.introduced = today.introduced.filter((char) => {
+        const memory = progress.learned[char];
+        return memory && memory.seen > 0;
+      });
+      today.completed = false;
+      saveProgress();
+    }
+
     function trimTodayIntroducedToLimit() {
       const today = dailyRecord();
       if (today.introduced.length <= settings.dailyLimit) return;
@@ -2356,7 +2807,7 @@
       const wrongDiff = (bMemory.wrong || 0) - (aMemory.wrong || 0);
       if (wrongDiff) return wrongDiff;
 
-      return (aMemory.nextReview || 0) - (bMemory.nextReview || 0) || a.item.rank - b.item.rank;
+      return (aMemory.nextReview || 0) - (bMemory.nextReview || 0) || compareDictionaryEntries(a.item, b.item);
     }
 
     function interleaveNewItems(reviewItems, newItems) {
@@ -2405,6 +2856,17 @@
       return learningQueue.splice(queueIndex, 1)[0] || null;
     }
 
+    function newWordCandidateIndexes() {
+      const indexes = DICTIONARY
+        .map((item, itemIndex) => ({ item, itemIndex, memory: progress.learned[item.char] }))
+        .filter(({ memory }) => !memory || memory.seen <= 0)
+        .map(({ itemIndex }) => itemIndex);
+
+      return useRandomDailyOrder()
+        ? shuffleIndexes(indexes)
+        : indexes.sort((a, b) => compareDictionaryEntries(DICTIONARY[a], DICTIONARY[b]));
+    }
+
     function dueReviewIndexes(now = Date.now()) {
       return DICTIONARY
         .map((item, itemIndex) => ({ item, itemIndex, memory: progress.learned[item.char] }))
@@ -2418,10 +2880,10 @@
       const remainingNewSlots = Math.max(0, todayNewLimit(today) - introduced.size);
       if (remainingNewSlots <= 0) return;
 
-      for (let i = 0; i < DICTIONARY.length && today.introduced.length < todayNewLimit(today); i += 1) {
-        const item = DICTIONARY[i];
-        const memory = progress.learned[item.char];
-        if ((memory && memory.seen > 0) || introduced.has(item.char)) continue;
+      for (const itemIndex of newWordCandidateIndexes()) {
+        if (today.introduced.length >= todayNewLimit(today)) break;
+        const item = DICTIONARY[itemIndex];
+        if (!item || introduced.has(item.char)) continue;
         introduced.add(item.char);
         today.introduced.push(item.char);
       }
@@ -2654,7 +3116,7 @@
     function defaultLearningRowCompare(a, b) {
       const wrongDiff = (b.memory.wrong || 0) - (a.memory.wrong || 0);
       if (wrongDiff) return wrongDiff;
-      return (b.memory.lastSeen || 0) - (a.memory.lastSeen || 0) || a.item.rank - b.item.rank;
+      return (b.memory.lastSeen || 0) - (a.memory.lastSeen || 0) || compareDictionaryEntries(a.item, b.item);
     }
 
     function compareLearningRows(a, b) {
@@ -2720,10 +3182,11 @@
         const correct = memory.correct || 0;
         const wrong = memory.wrong || 0;
         const rate = percent(accuracyValue(memory));
+        const rankText = Number.isFinite(Number(item.rank)) ? `#${item.rank}` : "自訂";
         return `
           <tr>
             <td><span class="record-char">${item.char}</span></td>
-            <td>#${item.rank}</td>
+            <td>${rankText}</td>
             <td>${item.head}${item.tail}</td>
             <td>${attempts}</td>
             <td>${correct}</td>
@@ -2759,6 +3222,7 @@
       if (open) {
         renderRecordPanel();
         closeSettingsMenu();
+        closeDictionaryPanel();
       }
 
       recordPanel.classList.toggle("show", open);
@@ -2769,6 +3233,172 @@
       setRecordPanel(false);
     }
 
+    function dictionaryModeLabel() {
+      if (dictionaryState.source === "custom") return "自訂 JSON 詞庫 · 無 Rank";
+      if (dictionaryState.source === "edited") return "已編輯內建詞庫 · Rank 優先";
+      return "內建 Rank 詞庫";
+    }
+
+    function setDictionaryStatus(message = "") {
+      dictionaryStatus.textContent = message;
+    }
+
+    function renderDictionaryEditor() {
+      const characters = currentDictionaryCharacters();
+      dictionarySubtitle.textContent = dictionaryModeLabel();
+      dictionaryCountLabel.textContent = characters.length === DICTIONARY.length
+        ? `${characters.length} 個字`
+        : `${characters.length} 個字 · ${DICTIONARY.length} 可練習`;
+
+      if (!characters.length) {
+        dictionaryList.innerHTML = `<div class="record-empty">詞庫目前沒有可練習的字。請添加漢字，或輸入 JSON 詞庫。</div>`;
+        return;
+      }
+
+      const rows = characters
+        .map((char, customOrder) => ({ char, customOrder, item: DICTIONARY_BY_CHARACTER[char] || null }))
+        .sort((a, b) => {
+          if (dictionaryState.source === "custom") return a.customOrder - b.customOrder;
+          if (a.item && b.item) return compareDictionaryEntries(a.item, b.item);
+          if (a.item || b.item) return a.item ? -1 : 1;
+          return a.customOrder - b.customOrder;
+        });
+
+      dictionaryList.innerHTML = rows.map(({ char, item }) => {
+        const rankText = item && Number.isFinite(Number(item.rank)) ? `#${item.rank}` : dictionaryState.source === "custom" ? "自訂" : "新增";
+        const codeText = item ? `${item.head || "?"}${item.tail || "?"}` : "無碼";
+        return `
+          <button class="dictionary-token" type="button" data-char="${escapeHtml(char)}" aria-label="剷除 ${escapeHtml(char)}">
+            <span class="dictionary-token-delete">×</span>
+            <span class="dictionary-token-char">${escapeHtml(char)}</span>
+            <span class="dictionary-token-meta">${rankText} · ${escapeHtml(codeText)}</span>
+          </button>
+        `;
+      }).join("");
+
+      if (characters.length !== DICTIONARY.length) {
+        setDictionaryStatus(`有 ${characters.length - DICTIONARY.length} 個字暫時沒有碼表資料，未加入練習。`);
+      } else if (!dictionaryStatus.textContent) {
+        setDictionaryStatus("");
+      }
+    }
+
+    function refreshDictionaryFromLoadedCodeIndex() {
+      if (dictionaryState.source === "builtin") return;
+      const before = DICTIONARY.length;
+      rebuildActiveDictionary();
+      if (DICTIONARY.length !== before) {
+        saveDictionaryState();
+        if (dictionaryPanel.classList.contains("show")) {
+          setDictionaryStatus(`完整碼表已載入，詞庫已更新為 ${DICTIONARY.length} 個可練習字。`);
+          renderDictionaryEditor();
+        }
+        rebuildSession();
+      }
+    }
+
+    function setDictionaryPanel(open) {
+      if (open) {
+        renderDictionaryEditor();
+        closeSettingsMenu();
+        closeRecordPanel();
+      }
+
+      dictionaryPanel.classList.toggle("show", open);
+      dictionaryPanel.setAttribute("aria-hidden", open ? "false" : "true");
+      if (open) dictionaryAddInput.focus();
+    }
+
+    function closeDictionaryPanel() {
+      setDictionaryPanel(false);
+    }
+
+    async function applyDictionaryChange(nextState, statusMessage = "", options = {}) {
+      dictionaryState = nextState;
+      if (dictionaryState.source !== "builtin" && externalCodeIndexStatus !== "ready" && externalCodeIndexStatus !== "failed") {
+        setDictionaryStatus("正在載入完整碼表...");
+        await ensureExternalCodeIndex();
+      }
+      rebuildActiveDictionary();
+      if (options.resetToday) resetTodayQueueForDictionaryChange();
+      saveDictionaryState();
+      setDictionaryStatus(statusMessage);
+      renderDictionaryEditor();
+      rebuildSession();
+    }
+
+    function withEditedDictionaryCharacters(transform) {
+      const characters = currentDictionaryCharacters();
+      const nextCharacters = normalizeDictionaryCharacters(transform(characters));
+      return { source: dictionaryState.source === "custom" ? "custom" : "edited", characters: nextCharacters };
+    }
+
+    async function addDictionaryCharacters(value) {
+      const additions = normalizeDictionaryCharacters(value);
+      if (!additions.length) {
+        setDictionaryStatus("請輸入要添加的漢字。");
+        return;
+      }
+
+      const beforeCount = currentDictionaryCharacters().length;
+      const nextState = withEditedDictionaryCharacters((characters) => [...characters, ...additions]);
+      const addedCount = nextState.characters.length - beforeCount;
+      await applyDictionaryChange(nextState, addedCount > 0 ? `已添加 ${addedCount} 個字。` : "這些字已經在詞庫裡。");
+      dictionaryAddInput.value = "";
+    }
+
+    async function removeDictionaryCharacter(char) {
+      const nextState = withEditedDictionaryCharacters((characters) => characters.filter((item) => item !== char));
+      await applyDictionaryChange(nextState, `已剷除「${char}」。`);
+    }
+
+    function exportDictionaryJson() {
+      const payload = {
+        version: 1,
+        source: dictionaryState.source,
+        orderMode: settings.orderMode,
+        characters: currentDictionaryCharacters()
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `sucheng-dictionary-${todayKey()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+      setDictionaryStatus("已輸出 JSON。");
+    }
+
+    function importDictionaryFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const payload = safeJsonParse(String(reader.result || ""), null);
+        const characters = charactersFromDictionaryPayload(payload);
+        if (!characters.length) {
+          setDictionaryStatus("JSON 裡沒有找到可用漢字。");
+          return;
+        }
+
+        await applyDictionaryChange(
+          { source: "custom", characters },
+          `已輸入 ${characters.length} 個字，將以隨機方式出題。`,
+          { resetToday: true }
+        );
+      };
+      reader.onerror = () => setDictionaryStatus("讀取 JSON 失敗，請再試一次。");
+      reader.readAsText(file);
+      dictionaryImportInput.value = "";
+    }
+
+    async function resetDictionaryToBuiltIn() {
+      const confirmed = window.confirm("確定要還原預設的詞庫嗎？");
+      if (!confirmed) return;
+      await applyDictionaryChange(defaultDictionaryState(), "已還原至預設詞庫。", { resetToday: true });
+    }
+
     function setSettingsMenu(open) {
       settingsMenu.classList.toggle("show", open);
       settingsMenu.setAttribute("aria-hidden", open ? "false" : "true");
@@ -2777,6 +3407,21 @@
 
     function closeSettingsMenu() {
       setSettingsMenu(false);
+    }
+
+    function setOrderMode(mode) {
+      const nextMode = mode === "random" ? "random" : "rank";
+      if (settings.orderMode === nextMode) {
+        closeSettingsMenu();
+        return;
+      }
+
+      settings.orderMode = nextMode;
+      saveSettings();
+      syncOrderModeButtons();
+      resetUnseenTodayQueueForOrderChange();
+      closeSettingsMenu();
+      rebuildSession();
     }
 
     function resetLearningProgress() {
@@ -3214,13 +3859,13 @@
       }
     }
 
-    function clearDecompositionSearch() {
+    function clearDecompositionSearch(options = {}) {
       decompositionSearchInput.value = "";
       decompositionSearchClear.classList.remove("show");
       decompositionSearchResult.classList.remove("show");
       decompositionSearchResult.innerHTML = "";
       leaveSearchMode();
-      decompositionSearchInput.focus();
+      if (options.focus !== false) decompositionSearchInput.focus();
     }
 
     function showKeyHint(letter, keyEl) {
@@ -3375,8 +4020,9 @@
         return;
       }
       if (roundRank) {
-        roundRank.hidden = false;
-        roundRank.textContent = `#${question.rank}`;
+        const rank = Number(question.rank);
+        roundRank.hidden = !Number.isFinite(rank);
+        roundRank.textContent = Number.isFinite(rank) ? `#${rank}` : "";
       }
       updateMemoryText();
     }
@@ -3431,9 +4077,9 @@
       restartClass(wordEl, "entering");
     }
 
-    function rebuildSession() {
+    function rebuildSession(options = {}) {
       clearTimer();
-      clearDecompositionSearch();
+      clearDecompositionSearch({ focus: options.focusSearch === true });
       order = createQuestionOrder();
       index = 0;
       sessionTotal = order.length;
@@ -3587,9 +4233,18 @@
       event.stopPropagation();
     });
 
+    [orderRankButton, orderRandomButton].forEach((button) => {
+      button.addEventListener("click", () => setOrderMode(button.dataset.orderMode));
+    });
+
     recordButton.addEventListener("click", (event) => {
       event.stopPropagation();
       setRecordPanel(true);
+    });
+
+    editDictionaryButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setDictionaryPanel(true);
     });
 
     recordPanel.addEventListener("click", closeRecordPanel);
@@ -3599,6 +4254,30 @@
     });
 
     recordCloseButton.addEventListener("click", closeRecordPanel);
+
+    dictionaryPanel.addEventListener("click", closeDictionaryPanel);
+
+    dictionaryPanel.querySelector(".dictionary-sheet").addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    dictionaryCloseButton.addEventListener("click", closeDictionaryPanel);
+
+    dictionaryAddForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      addDictionaryCharacters(dictionaryAddInput.value);
+    });
+
+    dictionaryList.addEventListener("click", (event) => {
+      const token = event.target.closest("[data-char]");
+      if (!token) return;
+      removeDictionaryCharacter(token.dataset.char);
+    });
+
+    dictionaryExportButton.addEventListener("click", exportDictionaryJson);
+    dictionaryImportButton.addEventListener("click", () => dictionaryImportInput.click());
+    dictionaryImportInput.addEventListener("change", () => importDictionaryFile(dictionaryImportInput.files?.[0]));
+    dictionaryResetButton.addEventListener("click", resetDictionaryToBuiltIn);
 
     recordTableWrap.addEventListener("click", (event) => {
       const button = event.target.closest("[data-sort-key]");
@@ -3643,6 +4322,7 @@
 
       if (event.key === "Escape") {
         closeRecordPanel();
+        closeDictionaryPanel();
         closeSettingsMenu();
         hideKeyHint();
         clearDecompositionSearch();
@@ -3675,7 +4355,7 @@
     renderKeyboard();
     renderQuestion();
     warmAuxiliaryCards();
-    ensureExternalCodeIndex();
+    ensureExternalCodeIndex().then(refreshDictionaryFromLoadedCodeIndex);
   </script>
 </body>
 </html>
