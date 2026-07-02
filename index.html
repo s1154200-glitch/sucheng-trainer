@@ -2132,6 +2132,8 @@
     const SETTINGS_KEY = "suchengTrainerSettings.v1";
     const DAY_MS = 24 * 60 * 60 * 1000;
     const REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30, 60, 120];
+    const LEARNING_STEPS_CORRECT_NEEDED = 2;
+    const LEARNING_REINSERT_AFTER = 3;
 
     const wordEl = document.getElementById("word");
     const heroEl = document.querySelector(".hero");
@@ -2181,13 +2183,10 @@
     const auxiliaryCardCache = new Map();
     const auxiliaryGlyphPreloadUrls = new Set();
 
-    // Anki-style learning queue: cards stay here until they graduate (2 correct in a row)
-    // Each entry: { itemIndex, correctStreak }
-    const LEARNING_STEPS_CORRECT_NEEDED = 2; // consecutive correct answers to graduate
-    const LEARNING_REINSERT_AFTER = 3;       // re-show after this many other cards
     let learningQueue = [];       // { itemIndex, correctStreak }
     let currentLearningCard = null; // { itemIndex, correctStreak } — the card being shown now (if from queue)
     let learningInsertCountdown = 0; // cards until next learning card appears
+    let lastShownItemIndex = -1;
 
     dailyLimitSelect.value = String(settings.dailyLimit);
 
@@ -2239,8 +2238,11 @@
         return { learned: {}, daily: {} };
       }
 
+      const learned = saved.learned && typeof saved.learned === "object" ? saved.learned : {};
+      Object.values(learned).forEach(normalizeMemory);
+
       return {
-        learned: saved.learned && typeof saved.learned === "object" ? saved.learned : {},
+        learned,
         daily: saved.daily && typeof saved.daily === "object" ? saved.daily : {}
       };
     }
@@ -2257,12 +2259,40 @@
         streak: 0,
         level: 0,
         nextReview: 0,
-        lastSeen: 0
+        lastSeen: 0,
+        learningStreak: 0,
+        graduated: false
       };
+    }
+
+    function normalizeMemory(memory) {
+      if (!memory || typeof memory !== "object") return memory;
+      if (typeof memory.graduated !== "boolean") {
+        memory.graduated = (memory.streak || 0) >= LEARNING_STEPS_CORRECT_NEEDED
+          && Number.isFinite(memory.nextReview)
+          && memory.nextReview > 0;
+      }
+      if (!Number.isFinite(memory.learningStreak)) {
+        memory.learningStreak = memory.graduated
+          ? 0
+          : Math.min(Math.max(memory.streak || 0, 0), LEARNING_STEPS_CORRECT_NEEDED - 1);
+      }
+      return memory;
+    }
+
+    function isGraduatedMemory(memory) {
+      return !!(memory && memory.graduated === true);
+    }
+
+    function isDueReviewMemory(memory, now = Date.now()) {
+      return isGraduatedMemory(memory)
+        && Number.isFinite(memory.nextReview)
+        && memory.nextReview <= now;
     }
 
     function memoryFor(char) {
       if (!progress.learned[char]) progress.learned[char] = defaultMemory();
+      normalizeMemory(progress.learned[char]);
       return progress.learned[char];
     }
 
@@ -2298,7 +2328,7 @@
       const removable = [];
       today.introduced.forEach((char) => {
         const memory = progress.learned[char];
-        if (memory && memory.seen > 0) {
+        if (isGraduatedMemory(memory)) {
           keep.push(char);
         } else {
           removable.push(char);
@@ -2312,8 +2342,8 @@
     function reviewPriority(a, b, now = Date.now()) {
       const aMemory = a.memory;
       const bMemory = b.memory;
-      const aDue = aMemory.nextReview <= now ? 1 : 0;
-      const bDue = bMemory.nextReview <= now ? 1 : 0;
+      const aDue = isDueReviewMemory(aMemory, now) ? 1 : 0;
+      const bDue = isDueReviewMemory(bMemory, now) ? 1 : 0;
       if (aDue !== bDue) return bDue - aDue;
 
       const levelDiff = (aMemory.level || 0) - (bMemory.level || 0);
@@ -2343,10 +2373,42 @@
       return [...result, ...newQueue];
     }
 
+    function shuffleIndexes(indexes) {
+      const shuffled = [...indexes];
+      for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function insertLearningCard(card) {
+      const index = learningQueue.length === 0
+        ? learningQueue.length
+        : Math.floor(Math.random() * (learningQueue.length + 1));
+      learningQueue.splice(index, 0, card);
+    }
+
+    function takeLearningCard(avoidItemIndex = -1) {
+      if (!learningQueue.length) return null;
+      let queueIndex = Math.floor(Math.random() * learningQueue.length);
+
+      if (learningQueue.length > 1) {
+        const alternatives = learningQueue
+          .map((card, index) => ({ card, index }))
+          .filter(({ card }) => card.itemIndex !== avoidItemIndex);
+        if (alternatives.length) {
+          queueIndex = alternatives[Math.floor(Math.random() * alternatives.length)].index;
+        }
+      }
+
+      return learningQueue.splice(queueIndex, 1)[0] || null;
+    }
+
     function dueReviewIndexes(now = Date.now()) {
       return DICTIONARY
         .map((item, itemIndex) => ({ item, itemIndex, memory: progress.learned[item.char] }))
-        .filter(({ memory }) => memory && memory.seen > 0 && memory.nextReview <= now)
+        .filter(({ memory }) => isDueReviewMemory(memory, now))
         .sort((a, b) => reviewPriority(a, b, now))
         .map(({ itemIndex }) => itemIndex);
     }
@@ -2371,8 +2433,22 @@
         .filter((itemIndex) => {
           if (itemIndex < 0) return false;
           const memory = progress.learned[DICTIONARY[itemIndex].char];
-          return !memory || memory.seen <= 0;
+          return !isGraduatedMemory(memory);
         });
+    }
+
+    function ungraduatedPracticeIndexes(today = dailyRecord()) {
+      const introduced = new Set(today.introduced);
+      return DICTIONARY
+        .map((item, itemIndex) => ({ item, itemIndex, memory: progress.learned[item.char] }))
+        .filter(({ item, memory }) => {
+          return memory && memory.seen > 0 && !isGraduatedMemory(memory) && !introduced.has(item.char);
+        })
+        .map(({ itemIndex }) => itemIndex);
+    }
+
+    function uniqueIndexes(indexes) {
+      return [...new Set(indexes.filter((itemIndex) => Number.isInteger(itemIndex) && itemIndex >= 0))];
     }
 
     function createQuestionOrder() {
@@ -2383,9 +2459,10 @@
       const today = dailyRecord();
       introduceNewWords(today);
 
-      const reviewOrder = dueReviewIndexes(now);
-      const pendingOrder = pendingNewIndexes(today);
-      const uniqueOrder = interleaveNewItems(reviewOrder, pendingOrder);
+      const reviewOrder = shuffleIndexes(dueReviewIndexes(now));
+      const pendingOrder = shuffleIndexes(pendingNewIndexes(today));
+      const practiceOrder = shuffleIndexes(ungraduatedPracticeIndexes(today));
+      const uniqueOrder = uniqueIndexes(interleaveNewItems(reviewOrder, [...pendingOrder, ...practiceOrder]));
 
       if (requestedIndex !== -1) {
         return [requestedIndex, ...uniqueOrder.filter((itemIndex) => itemIndex !== requestedIndex)];
@@ -2414,7 +2491,7 @@
       // Time to show a learning card?
       if (learningQueue.length > 0) {
         if (learningInsertCountdown <= 0) {
-          currentLearningCard = learningQueue.shift();
+          currentLearningCard = takeLearningCard(lastShownItemIndex);
           learningInsertCountdown = LEARNING_REINSERT_AFTER;
           return;
         }
@@ -2428,14 +2505,14 @@
     function countDueReviews(now = Date.now()) {
       return DICTIONARY.reduce((count, item) => {
         const memory = progress.learned[item.char];
-        return count + (memory && memory.seen > 0 && memory.nextReview <= now ? 1 : 0);
+        return count + (isDueReviewMemory(memory, now) ? 1 : 0);
       }, 0);
     }
 
     function nextDueReviewTime(now = Date.now()) {
       return DICTIONARY.reduce((soonest, item) => {
         const memory = progress.learned[item.char];
-        if (!memory || memory.seen <= 0 || !Number.isFinite(memory.nextReview) || memory.nextReview <= now) {
+        if (!isGraduatedMemory(memory) || !Number.isFinite(memory.nextReview) || memory.nextReview <= now) {
           return soonest;
         }
         return Math.min(soonest, memory.nextReview);
@@ -2456,14 +2533,20 @@
     function todayIntroducedLearnedCount(today = dailyRecord()) {
       return today.introduced.reduce((count, char) => {
         const memory = progress.learned[char];
-        return count + (memory && memory.seen > 0 ? 1 : 0);
+        return count + (isGraduatedMemory(memory) ? 1 : 0);
       }, 0);
     }
 
     function todayIntroducedPendingCount(today = dailyRecord()) {
       return today.introduced.reduce((count, char) => {
         const memory = progress.learned[char];
-        return count + ((memory && memory.seen > 0) ? 0 : 1);
+        return count + (isGraduatedMemory(memory) ? 0 : 1);
+      }, 0);
+    }
+
+    function graduatedWordCount() {
+      return Object.values(progress.learned).reduce((count, memory) => {
+        return count + (isGraduatedMemory(memory) ? 1 : 0);
       }, 0);
     }
 
@@ -2478,6 +2561,7 @@
 
     function isDailyTaskComplete(today = dailyRecord(), now = Date.now()) {
       return !hasDueReviewNow(now)
+        && ungraduatedPracticeIndexes(today).length === 0
         && todayIntroducedPendingCount(today) === 0
         && todayIntroducedLearnedCount(today) >= todayNewLimit(today);
     }
@@ -2508,7 +2592,7 @@
 
     function updateMemoryText() {
       const today = dailyRecord();
-      const learnedCount = Object.keys(progress.learned).length;
+      const learnedCount = graduatedWordCount();
       const dueCount = countDueReviews();
       const learnedToday = todayIntroducedLearnedCount(today);
       const completed = isDailyTaskComplete(today);
@@ -2536,7 +2620,7 @@
     function hasDueReviewNow(now = Date.now()) {
       return DICTIONARY.some((item) => {
         const memory = progress.learned[item.char];
-        return memory && memory.seen > 0 && memory.nextReview <= now;
+        return isDueReviewMemory(memory, now);
       });
     }
 
@@ -2611,15 +2695,16 @@
 
     function renderRecordPanel() {
       const rows = learningRows();
+      const graduatedCount = rows.filter((row) => isGraduatedMemory(row.memory)).length;
       const totalSeen = rows.reduce((sum, row) => sum + (row.memory.seen || 0), 0);
       const totalCorrect = rows.reduce((sum, row) => sum + (row.memory.correct || 0), 0);
       const totalWrong = rows.reduce((sum, row) => sum + (row.memory.wrong || 0), 0);
       const dueCount = countDueReviews();
 
       const today = dailyRecord();
-      recordSubtitle.textContent = `已學 ${rows.length} 個單字 · 今日新字 ${todayIntroducedLearnedCount(today)}/${todayNewLimit(today)}`;
+      recordSubtitle.textContent = `已學 ${graduatedCount} 個單字 · 今日新字 ${todayIntroducedLearnedCount(today)}/${todayNewLimit(today)}`;
       recordSummary.innerHTML = `
-        <div class="record-stat"><strong>${rows.length}</strong><span>已學單字</span></div>
+        <div class="record-stat"><strong>${graduatedCount}</strong><span>已學單字</span></div>
         <div class="record-stat"><strong>${totalSeen}</strong><span>練習次數</span></div>
         <div class="record-stat"><strong>${percent(totalCorrect / Math.max(1, totalCorrect + totalWrong))}</strong><span>總正確率</span></div>
         <div class="record-stat"><strong>${dueCount}</strong><span>待複習</span></div>
@@ -2718,27 +2803,32 @@
       rebuildSession();
     }
 
-    function scheduleReview(memory, correct, usedHint = false) {
+    function graduateMemory(memory) {
       const now = Date.now();
-      memory.seen += 1;
       memory.lastSeen = now;
+      memory.level = Math.min(
+        REVIEW_INTERVALS.length - 1,
+        Math.max(memory.level + 1, memory.streak >= LEARNING_STEPS_CORRECT_NEEDED ? 2 : 1)
+      );
+      const intervalDays = REVIEW_INTERVALS[memory.level];
+      memory.nextReview = now + intervalDays * DAY_MS;
+      memory.graduated = true;
+      memory.learningStreak = 0;
+      saveProgress();
+    }
 
+    function recordPracticeAttempt(memory, correct, usedHint = false) {
+      memory.seen += 1;
+      memory.lastSeen = Date.now();
       if (correct && !usedHint) {
         memory.correct += 1;
         memory.streak += 1;
-        memory.level = Math.min(REVIEW_INTERVALS.length - 1, Math.max(memory.level + 1, memory.streak >= 2 ? 2 : 1));
+        memory.learningStreak = Math.min((memory.learningStreak || 0) + 1, LEARNING_STEPS_CORRECT_NEEDED);
       } else {
         memory.wrong += 1;
         memory.streak = 0;
-        memory.level = Math.max(0, memory.level - 1);
+        memory.learningStreak = 0;
       }
-
-      const wrongRate = memory.wrong / Math.max(1, memory.seen);
-      const intervalDays = correct && !usedHint
-        ? REVIEW_INTERVALS[memory.level]
-        : wrongRate >= 0.5 ? 0.04 : 0.17;
-
-      memory.nextReview = now + intervalDays * DAY_MS;
       saveProgress();
     }
 
@@ -2749,11 +2839,13 @@
     }
 
     // Enqueue a card into the learning queue (avoid duplicates)
-    function enqueueForLearning(itemIndex) {
-      const alreadyQueued = learningQueue.some((e) => e.itemIndex === itemIndex);
+    function enqueueForLearning(itemIndex, correctStreak = 0) {
+      const queuedCard = learningQueue.find((e) => e.itemIndex === itemIndex);
       const isCurrentLearning = currentLearningCard && currentLearningCard.itemIndex === itemIndex;
-      if (!alreadyQueued && !isCurrentLearning) {
-        learningQueue.push({ itemIndex, correctStreak: 0 });
+      if (queuedCard) {
+        queuedCard.correctStreak = Math.max(queuedCard.correctStreak || 0, correctStreak);
+      } else if (!isCurrentLearning) {
+        insertLearningCard({ itemIndex, correctStreak });
       }
     }
 
@@ -2765,48 +2857,22 @@
       const itemIndex = currentItemIndex();
 
       if (currentLearningCard !== null) {
-        // In learning phase — update streak but don't graduate to SRS yet
-        if (correct && !usedHint) {
-          currentLearningCard.correctStreak += 1;
-        } else {
-          currentLearningCard.correctStreak = 0;
-        }
-
+        recordPracticeAttempt(memory, correct, usedHint);
+        currentLearningCard.correctStreak = memory.learningStreak || 0;
         const graduated = currentLearningCard.correctStreak >= LEARNING_STEPS_CORRECT_NEEDED;
 
         if (graduated) {
-          // Now commit to long-term SRS
-          scheduleReview(memory, true, false);
-          // Mark as seen so it counts towards "今日已學"
-          if (memory.seen <= 1) {
-            // already incremented inside scheduleReview; just ensure daily intro counts it
-          }
+          graduateMemory(memory);
         } else {
-          // Still learning — record an attempt for stats but re-queue
-          memory.seen += 1;
-          memory.lastSeen = Date.now();
-          if (correct && !usedHint) {
-            memory.correct += 1;
-          } else {
-            memory.wrong += 1;
-          }
-          saveProgress();
-          // Re-insert into learning queue
-          learningQueue.push({ itemIndex, correctStreak: currentLearningCard.correctStreak });
+          insertLearningCard({ itemIndex, correctStreak: currentLearningCard.correctStreak });
           learningInsertCountdown = Math.min(LEARNING_REINSERT_AFTER, learningQueue.length > 0 ? LEARNING_REINSERT_AFTER : 0);
         }
       } else {
-        // Normal SRS card
-        const wasNew = !memory || memory.seen <= 0;
-        scheduleReview(memory, correct, usedHint);
-
-        if (!correct || usedHint) {
-          // Wrong or hinted: put into learning queue for in-session practice
-          enqueueForLearning(itemIndex);
-          if (learningInsertCountdown <= 0) learningInsertCountdown = LEARNING_REINSERT_AFTER;
-        } else if (wasNew) {
-          // First-time correct: still put in learning queue to confirm
-          enqueueForLearning(itemIndex);
+        recordPracticeAttempt(memory, correct, usedHint);
+        if ((memory.learningStreak || 0) >= LEARNING_STEPS_CORRECT_NEEDED) {
+          graduateMemory(memory);
+        } else {
+          enqueueForLearning(itemIndex, memory.learningStreak || 0);
           if (learningInsertCountdown <= 0) learningInsertCountdown = LEARNING_REINSERT_AFTER;
         }
       }
@@ -3324,7 +3390,7 @@
       if (!question) {
         // Check if learning queue has cards left
         if (learningQueue.length > 0) {
-          currentLearningCard = learningQueue.shift();
+          currentLearningCard = takeLearningCard(lastShownItemIndex);
           learningInsertCountdown = LEARNING_REINSERT_AFTER;
           renderQuestion();
           return;
@@ -3355,6 +3421,7 @@
       hintButton.dataset.action = "hint";
       heroEl.classList.remove("answer-mode");
       wordEl.className = "word";
+      lastShownItemIndex = currentItemIndex();
       renderWord(question);
       answerLine.className = "answer-line";
       answerLine.innerHTML = "";
@@ -3376,6 +3443,7 @@
       learningQueue = [];
       currentLearningCard = null;
       learningInsertCountdown = 0;
+      lastShownItemIndex = -1;
       renderQuestion();
     }
 
@@ -3477,7 +3545,7 @@
       if (index >= order.length) {
         // If there are still learning cards pending, keep going
         if (learningQueue.length > 0) {
-          currentLearningCard = learningQueue.shift();
+          currentLearningCard = takeLearningCard(lastShownItemIndex);
           learningInsertCountdown = LEARNING_REINSERT_AFTER;
           renderQuestion();
           return;
