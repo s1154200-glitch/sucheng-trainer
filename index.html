@@ -1959,7 +1959,7 @@
       <div class="hero">
         <header class="topbar">
           <div class="title-block">
-            <h1 class="title">速成學習</h1>
+            <h1 class="title">速成拆碼</h1>
             <div class="subtitle">頭碼 · 尾碼</div>
           </div>
           <div class="top-actions">
@@ -3130,7 +3130,9 @@
       }
       const seenChars = new Set();
       progress.daily[key].introduced = progress.daily[key].introduced.filter((char) => {
-        if (!DICTIONARY_CHAR_SET.has(char) || seenChars.has(char)) return false;
+        const memory = progress.learned[char];
+        const keepCompletedHistory = !DICTIONARY_CHAR_SET.has(char) && isGraduatedMemory(memory);
+        if ((!DICTIONARY_CHAR_SET.has(char) && !keepCompletedHistory) || seenChars.has(char)) return false;
         seenChars.add(char);
         return true;
       });
@@ -3269,6 +3271,7 @@
     }
 
     function introduceNewWords(today) {
+      if (today.completed) return;
       const introduced = new Set(today.introduced);
       const remainingNewSlots = Math.max(0, todayNewLimit(today) - introduced.size);
       if (remainingNewSlots <= 0) return;
@@ -3689,7 +3692,7 @@
           <thead>
             <tr>
               <th>單字</th>
-              <th>字頻</th>
+              <th>Rank</th>
               <th></th>
             </tr>
           </thead>
@@ -3913,7 +3916,7 @@
     async function resetDictionaryToBuiltIn() {
       const confirmed = window.confirm("確定要還原預設的詞庫嗎？");
       if (!confirmed) return;
-      await applyDictionaryChange(defaultDictionaryState(), "已還原至預設詞庫。", { resetToday: true });
+      await applyDictionaryChange(defaultDictionaryState(), "已還原至預設詞庫。");
     }
 
     function setSettingsMenu(open) {
