@@ -793,7 +793,6 @@
       display: grid;
       grid-template-rows: auto minmax(0, 1fr);
       gap: 8px;
-      overflow: hidden;
     }
 
     .dictionary-list-summary {
@@ -811,6 +810,8 @@
     .dictionary-table-wrap {
       min-height: 0;
       overflow: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
     }
 
     .dictionary-table {
@@ -3688,7 +3689,7 @@
           <thead>
             <tr>
               <th>單字</th>
-              <th>字頻</th>
+              <th>Rank</th>
               <th></th>
             </tr>
           </thead>
@@ -3727,7 +3728,6 @@
       dictionaryPanel.classList.toggle("show", open);
       dictionaryPanel.setAttribute("aria-hidden", open ? "false" : "true");
       if (open) {
-        dictionaryAddInput.focus();
         if (dictionaryState.source === "builtin" && BUILT_IN_SOURCE_CHARS.length < 3500) {
           dictionaryCountLabel.textContent = `${BUILT_IN_SOURCE_CHARS.length || 0} 個字`;
           dictionaryList.innerHTML = `<div class="record-empty">正在載入內建 3500 字頻詞庫...</div>`;
