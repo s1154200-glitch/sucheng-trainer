@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <title>速成輸入法字形拆碼極速練習器</title>
+  <title>速成｜輸入法字形拆碼極速練習器</title>
   <style>
     :root {
       --ink: #15202b;
@@ -121,24 +121,23 @@
 
     .title-block {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      align-items: center;
     }
 
-    .title {
+    .logo-wordmark {
       margin: 0;
-      font-size: 16px;
-      line-height: 1.1;
+      display: inline-flex;
+      align-items: center;
+      line-height: 1;
       letter-spacing: 0;
-      font-weight: 850;
       white-space: nowrap;
     }
 
-    .subtitle {
-      display: none;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
+    .logo-image {
+      display: block;
+      width: 50px;
+      height: auto;
+      max-width: 25vw;
     }
 
     .top-actions {
@@ -241,17 +240,78 @@
       margin-top: 10px;
     }
 
-    .settings-row select {
-      width: 92px;
-      border: 0;
-      outline: 0;
-      border-radius: 13px;
-      padding: 8px 28px 8px 10px;
+    .settings-row-daily {
+      min-height: auto;
+      align-items: stretch;
+      padding: 10px;
+    }
+
+    .settings-row-daily-content {
+      width: 100%;
+      display: grid;
+      gap: 10px;
+    }
+
+    .settings-row-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: inherit;
+    }
+
+    .settings-row-title {
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 850;
+    }
+
+    .settings-row-note {
+      color: #8993a0;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 820;
+      white-space: nowrap;
+    }
+
+    .settings-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 4px;
+      padding: 3px;
+      border-radius: 15px;
+      background: rgba(23, 32, 43, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(21, 32, 43, 0.05);
+    }
+
+    .settings-choice {
+      min-width: 0;
+      min-height: 30px;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 950;
+      transition: transform 150ms ease, background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .settings-choice.is-active {
       background: #17202b;
       color: #ffffff;
-      font: inherit;
-      font-size: 13px;
-      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 6px 14px rgba(16, 23, 31, 0.13);
+    }
+
+    .settings-choice:active {
+      transform: scale(0.96);
+    }
+
+    .settings-choice:focus-visible,
+    .settings-switch:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(31, 122, 140, 0.16);
     }
 
     .settings-switch {
@@ -698,6 +758,122 @@
       line-height: 1.45;
       font-weight: 850;
       text-align: center;
+    }
+
+    .analysis-panel {
+      z-index: 12;
+    }
+
+    .analysis-sheet {
+      max-height: min(84dvh, 720px);
+      grid-template-rows: auto auto minmax(0, 1fr);
+    }
+
+    .analysis-overview {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .analysis-content {
+      min-height: 0;
+      overflow: auto;
+      display: grid;
+      gap: 10px;
+      padding-right: 2px;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .analysis-section {
+      min-width: 0;
+      padding: 12px;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .analysis-section-title {
+      margin: 0 0 10px;
+      color: #17202b;
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 950;
+    }
+
+    .analysis-letter-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .analysis-letter-row {
+      display: grid;
+      grid-template-columns: 54px minmax(0, 1fr) 34px;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+    }
+
+    .analysis-letter-name {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+      min-width: 0;
+      color: #17202b;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .analysis-letter-name small {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .analysis-bar-track {
+      height: 8px;
+      min-width: 0;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(31, 122, 140, 0.1);
+    }
+
+    .analysis-bar-fill {
+      display: block;
+      height: 100%;
+      min-width: 5px;
+      border-radius: inherit;
+      background: #1f7a8c;
+    }
+
+    .analysis-letter-count {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 950;
+      text-align: right;
+    }
+
+    .analysis-table-wrap {
+      max-height: 280px;
+      overflow: auto;
+      border-radius: 14px;
+      box-shadow: inset 0 0 0 1px var(--line);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .analysis-table {
+      min-width: 440px;
+    }
+
+    .analysis-table .record-char {
+      font-size: 18px;
+    }
+
+    .analysis-code {
+      font-weight: 950;
+      letter-spacing: 0;
     }
 
     .dictionary-panel {
@@ -1959,8 +2135,9 @@
       <div class="hero">
         <header class="topbar">
           <div class="title-block">
-            <h1 class="title">速成拆碼</h1>
-            <div class="subtitle">頭碼 · 尾碼</div>
+            <h1 class="logo-wordmark" aria-label="速成">
+              <img class="logo-image" src="logo-sucheng-03.png" alt="速成" width="516" height="229">
+            </h1>
           </div>
           <div class="top-actions">
             <button id="settingsButton" class="icon-button" type="button" aria-label="設定" aria-expanded="false" aria-controls="settingsMenu">
@@ -1971,16 +2148,21 @@
             </button>
             <div id="settingsMenu" class="settings-menu" aria-hidden="true">
               <p class="settings-menu-title">設定</p>
-              <label class="settings-row" for="dailyLimit">
-                <span>每日單字量</span>
-                <select id="dailyLimit" aria-label="每日學習數量">
-                  <option value="5">5</option>
-                  <option value="10" selected>10</option>
-                  <option value="20">20</option>
-                  <option value="30">30</option>
-                  <option value="50">50</option>
-                </select>
-              </label>
+              <div class="settings-row settings-row-daily">
+                <div class="settings-row-daily-content">
+                  <div class="settings-row-head">
+                    <span class="settings-row-title">每日單字量</span>
+                    <span class="settings-row-note">今日新字上限</span>
+                  </div>
+                  <div class="settings-choice-grid" role="group" aria-label="每日學習數量">
+                    <button class="settings-choice" type="button" data-daily-limit="5" aria-pressed="false">5</button>
+                    <button class="settings-choice" type="button" data-daily-limit="10" aria-pressed="false">10</button>
+                    <button class="settings-choice" type="button" data-daily-limit="20" aria-pressed="false">20</button>
+                    <button class="settings-choice" type="button" data-daily-limit="30" aria-pressed="false">30</button>
+                    <button class="settings-choice" type="button" data-daily-limit="50" aria-pressed="false">50</button>
+                  </div>
+                </div>
+              </div>
               <div class="settings-row">
                 <span>出字順序</span>
                 <button id="orderModeSwitch" class="settings-switch" type="button" role="switch" aria-checked="false" aria-label="切換出字順序">
@@ -2000,6 +2182,15 @@
                   <path d="M3 6h.01"></path>
                   <path d="M3 12h.01"></path>
                   <path d="M3 18h.01"></path>
+                </svg>
+              </button>
+              <button id="analysisButton" class="menu-button" type="button">
+                <span>學習分析</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 3v18h18"></path>
+                  <path d="M7 15v2"></path>
+                  <path d="M12 10v7"></path>
+                  <path d="M17 6v11"></path>
                 </svg>
               </button>
               <button id="editDictionaryButton" class="menu-button" type="button">
@@ -2098,6 +2289,33 @@
           <input id="recordImportInput" class="record-import-input" type="file" accept="application/json,.json">
         </div>
         <div id="recordTableWrap" class="record-table-wrap"></div>
+      </div>
+    </section>
+    <section id="analysisPanel" class="record-panel analysis-panel" aria-hidden="true">
+      <div class="record-sheet analysis-sheet" role="dialog" aria-modal="true" aria-labelledby="analysisTitle">
+        <div class="record-header">
+          <div>
+            <h2 id="analysisTitle" class="record-title">學習分析</h2>
+            <div id="analysisSubtitle" class="record-subtitle">尚未記錄輸入軌跡</div>
+          </div>
+          <button id="analysisCloseButton" class="record-close" type="button" aria-label="關閉學習分析">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="analysisOverview" class="analysis-overview" aria-live="polite"></div>
+        <div class="analysis-content">
+          <section class="analysis-section" aria-labelledby="analysisLettersTitle">
+            <h3 id="analysisLettersTitle" class="analysis-section-title">前 5 大高頻易錯字母</h3>
+            <div id="analysisLetterList" class="analysis-letter-list"></div>
+          </section>
+          <section class="analysis-section" aria-labelledby="analysisWordsTitle">
+            <h3 id="analysisWordsTitle" class="analysis-section-title">前 10 大易錯字排行榜</h3>
+            <div id="analysisWordTableWrap" class="analysis-table-wrap"></div>
+          </section>
+        </div>
       </div>
     </section>
     <section id="dictionaryPanel" class="record-panel dictionary-panel" aria-hidden="true">
@@ -2664,10 +2882,23 @@
     const STORAGE_KEY = "suchengTrainerSrs.v2";
     const SETTINGS_KEY = "suchengTrainerSettings.v1";
     const DICTIONARY_KEY = "suchengTrainerDictionary.v1";
+    const ANALYTICS_KEY = "suchengTrainerAnalytics.v1";
+    const DAILY_LIMIT_OPTIONS = [5, 10, 20, 30, 50];
     const DAY_MS = 24 * 60 * 60 * 1000;
     const REVIEW_INTERVALS = [0, 1, 3, 7, 14, 30, 60, 120];
     const LEARNING_STEPS_CORRECT_NEEDED = 2;
     const LEARNING_REINSERT_AFTER = 3;
+    const ANALYTICS_ERROR_LABELS = {
+      correct: "正確",
+      head: "首碼錯誤",
+      tail: "尾碼錯誤",
+      all: "全錯"
+    };
+    const ANALYTICS_PRIMARY_LABELS = {
+      head: "常錯首碼",
+      tail: "常錯尾碼",
+      all: "首尾都常錯"
+    };
 
     const wordEl = document.getElementById("word");
     const heroEl = document.querySelector(".hero");
@@ -2679,9 +2910,10 @@
     const roundRank = document.getElementById("roundRank");
     const settingsButton = document.getElementById("settingsButton");
     const settingsMenu = document.getElementById("settingsMenu");
-    const dailyLimitSelect = document.getElementById("dailyLimit");
+    const dailyLimitButtons = [...document.querySelectorAll("[data-daily-limit]")];
     const orderModeSwitch = document.getElementById("orderModeSwitch");
     const recordButton = document.getElementById("recordButton");
+    const analysisButton = document.getElementById("analysisButton");
     const editDictionaryButton = document.getElementById("editDictionaryButton");
     const resetProgressButton = document.getElementById("resetProgressButton");
     const recordPanel = document.getElementById("recordPanel");
@@ -2693,6 +2925,12 @@
     const recordImportButton = document.getElementById("recordImportButton");
     const recordImportInput = document.getElementById("recordImportInput");
     const recordTableWrap = document.getElementById("recordTableWrap");
+    const analysisPanel = document.getElementById("analysisPanel");
+    const analysisCloseButton = document.getElementById("analysisCloseButton");
+    const analysisSubtitle = document.getElementById("analysisSubtitle");
+    const analysisOverview = document.getElementById("analysisOverview");
+    const analysisLetterList = document.getElementById("analysisLetterList");
+    const analysisWordTableWrap = document.getElementById("analysisWordTableWrap");
     const dictionaryPanel = document.getElementById("dictionaryPanel");
     const dictionaryCloseButton = document.getElementById("dictionaryCloseButton");
     const dictionarySubtitle = document.getElementById("dictionarySubtitle");
@@ -2720,6 +2958,7 @@
     let settings = loadSettings();
     let dictionaryState = loadDictionaryState();
     let progress = loadProgress();
+    let analysisState = loadAnalysis();
     let order = [];
     let index = 0;
     let buffer = [];
@@ -2745,7 +2984,7 @@
     let learningInsertCountdown = 0; // cards until next learning card appears
     let lastShownItemIndex = -1;
 
-    dailyLimitSelect.value = String(settings.dailyLimit);
+    syncDailyLimitButtons();
     syncOrderModeButtons();
 
     function todayKey(time = Date.now()) {
@@ -2903,10 +3142,9 @@
 
     function loadSettings() {
       const saved = safeJsonParse(storageGet(SETTINGS_KEY), {});
-      const dailyLimit = Number(saved.dailyLimit) || 10;
       const orderMode = saved.orderMode === "random" ? "random" : "rank";
       return {
-        dailyLimit: Math.min(50, Math.max(5, dailyLimit)),
+        dailyLimit: normalizeDailyLimit(saved.dailyLimit),
         orderMode
       };
     }
@@ -3051,6 +3289,22 @@
       return dictionaryState.source === "custom" || settings.orderMode === "random";
     }
 
+    function normalizeDailyLimit(value) {
+      const parsed = Number(value);
+      if (!Number.isFinite(parsed)) return 10;
+      return DAILY_LIMIT_OPTIONS.reduce((closest, option) => (
+        Math.abs(option - parsed) < Math.abs(closest - parsed) ? option : closest
+      ), DAILY_LIMIT_OPTIONS[0]);
+    }
+
+    function syncDailyLimitButtons() {
+      dailyLimitButtons.forEach((button) => {
+        const active = Number(button.dataset.dailyLimit) === settings.dailyLimit;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+    }
+
     function syncOrderModeButtons() {
       const random = settings.orderMode === "random";
       orderModeSwitch.classList.toggle("is-random", random);
@@ -3075,6 +3329,155 @@
 
     function saveProgress() {
       storageSet(STORAGE_KEY, JSON.stringify(progress));
+    }
+
+    function defaultAnalysis() {
+      return { version: 1, attempts: [] };
+    }
+
+    function normalizeAnalysisAttempt(item) {
+      if (!item || typeof item !== "object") return null;
+      const char = getFirstHanCharacter(item.char || item.character || item.target || "");
+      const skipped = item.skipped === true || item.reason === "hint";
+      const expected = {
+        head: String(item.expected?.head || item.correct?.head || item.head || "").toUpperCase(),
+        tail: String(item.expected?.tail || item.correct?.tail || item.tail || "").toUpperCase()
+      };
+      const actual = {
+        head: String(item.actual?.head || item.input?.head || item.user?.head || "").toUpperCase(),
+        tail: String(item.actual?.tail || item.input?.tail || item.user?.tail || "").toUpperCase()
+      };
+      if (!char || !expected.head || !expected.tail) return null;
+      if ((!actual.head || !actual.tail) && !skipped) return null;
+
+      return {
+        time: Number(item.time || item.timestamp || Date.now()),
+        char,
+        expected,
+        actual,
+        skipped,
+        errorType: skipped ? "all" : classifyAnalysisAttempt(expected, actual)
+      };
+    }
+
+    function loadAnalysis() {
+      const saved = safeJsonParse(storageGet(ANALYTICS_KEY), null);
+      const attemptsSource = Array.isArray(saved)
+        ? saved
+        : Array.isArray(saved?.attempts)
+          ? saved.attempts
+          : [];
+      return {
+        version: 1,
+        attempts: attemptsSource.map(normalizeAnalysisAttempt).filter(Boolean)
+      };
+    }
+
+    function saveAnalysis() {
+      storageSet(ANALYTICS_KEY, JSON.stringify({
+        version: 1,
+        attempts: analysisState.attempts
+      }));
+    }
+
+    function classifyAnalysisAttempt(expected, actual) {
+      const headWrong = actual.head !== expected.head;
+      const tailWrong = actual.tail !== expected.tail;
+      if (!headWrong && !tailWrong) return "correct";
+      if (headWrong && !tailWrong) return "head";
+      if (!headWrong && tailWrong) return "tail";
+      return "all";
+    }
+
+    function recordInputAnalysis(question, actualLetters) {
+      if (!question || !Array.isArray(actualLetters) || actualLetters.length < 2) return;
+      const expected = { head: question.head, tail: question.tail };
+      const actual = {
+        head: String(actualLetters[0] || "").toUpperCase(),
+        tail: String(actualLetters[1] || "").toUpperCase()
+      };
+      const attempt = normalizeAnalysisAttempt({
+        time: Date.now(),
+        char: question.char,
+        expected,
+        actual
+      });
+      if (!attempt) return;
+
+      analysisState.attempts.push(attempt);
+      saveAnalysis();
+      if (analysisPanel.classList.contains("show")) renderAnalysisPanel();
+    }
+
+    function recordSkippedAnalysis(question) {
+      if (!question) return;
+      const attempt = normalizeAnalysisAttempt({
+        time: Date.now(),
+        char: question.char,
+        expected: { head: question.head, tail: question.tail },
+        actual: { head: "", tail: "" },
+        skipped: true
+      });
+      if (!attempt) return;
+
+      analysisState.attempts.push(attempt);
+      saveAnalysis();
+      if (analysisPanel.classList.contains("show")) renderAnalysisPanel();
+    }
+
+    function analysisAttempts() {
+      return analysisState.attempts.map(normalizeAnalysisAttempt).filter(Boolean);
+    }
+
+    function formatCodePair(pair) {
+      if (!pair) return "";
+      return `${rootText(pair.head)} ${rootText(pair.tail)}`;
+    }
+
+    function topLetterErrors(attempts) {
+      const counts = {};
+      attempts.forEach((attempt) => {
+        if (attempt.errorType === "correct") return;
+        if (attempt.actual.head !== attempt.expected.head && getMainRoot(attempt.expected.head)) {
+          counts[attempt.expected.head] = (counts[attempt.expected.head] || 0) + 1;
+        }
+        if (attempt.actual.tail !== attempt.expected.tail && getMainRoot(attempt.expected.tail)) {
+          counts[attempt.expected.tail] = (counts[attempt.expected.tail] || 0) + 1;
+        }
+      });
+
+      return Object.entries(counts)
+        .map(([letter, count]) => ({ letter, count }))
+        .sort((a, b) => b.count - a.count || rootText(a.letter).localeCompare(rootText(b.letter), "zh-Hant"))
+        .slice(0, 5);
+    }
+
+    function topMistakenWords(attempts) {
+      const rows = new Map();
+      attempts.forEach((attempt) => {
+        if (attempt.errorType === "correct") return;
+        if (!rows.has(attempt.char)) {
+          rows.set(attempt.char, {
+            char: attempt.char,
+            expected: attempt.expected,
+            wrong: 0,
+            types: { head: 0, tail: 0, all: 0 }
+          });
+        }
+        const row = rows.get(attempt.char);
+        row.wrong += 1;
+        row.types[attempt.errorType] = (row.types[attempt.errorType] || 0) + 1;
+      });
+
+      return [...rows.values()]
+        .sort((a, b) => b.wrong - a.wrong || a.char.localeCompare(b.char, "zh-Hant"))
+        .slice(0, 10);
+    }
+
+    function primaryMistakeType(types) {
+      const entries = Object.entries(types || {}).sort((a, b) => b[1] - a[1]);
+      const [type, count] = entries[0] || ["", 0];
+      return count > 0 ? ANALYTICS_PRIMARY_LABELS[type] || ANALYTICS_ERROR_LABELS[type] || "錯誤" : "—";
     }
 
     function defaultMemory() {
@@ -3614,10 +4017,74 @@
       `;
     }
 
+    function renderAnalysisPanel() {
+      const attempts = analysisAttempts();
+      const wrongAttempts = attempts.filter((attempt) => attempt.errorType !== "correct");
+      const correctCount = attempts.length - wrongAttempts.length;
+      const accuracy = attempts.length ? percent(correctCount / attempts.length) : "0%";
+      const letters = topLetterErrors(attempts);
+      const words = topMistakenWords(attempts);
+
+      analysisSubtitle.textContent = attempts.length
+        ? `已記錄 ${attempts.length} 次輸入 · 整體正確率 ${accuracy}`
+        : "尚未記錄輸入軌跡";
+      analysisOverview.innerHTML = `
+        <div class="record-stat"><strong>${attempts.length}</strong><span>總輸入次數</span></div>
+        <div class="record-stat"><strong>${accuracy}</strong><span>整體正確率</span></div>
+      `;
+
+      if (!letters.length) {
+        analysisLetterList.innerHTML = `<div class="record-empty">完成幾次兩碼輸入後，這裡會顯示最常被拆錯的正確字母。</div>`;
+      } else {
+        const maxLetterCount = Math.max(...letters.map((item) => item.count), 1);
+        analysisLetterList.innerHTML = letters.map(({ letter, count }) => {
+          const width = Math.max(8, Math.round((count / maxLetterCount) * 100));
+          return `
+            <div class="analysis-letter-row">
+              <span class="analysis-letter-name">${escapeHtml(rootText(letter))}<small>${escapeHtml(letter)}</small></span>
+              <span class="analysis-bar-track" aria-hidden="true">
+                <span class="analysis-bar-fill" style="width: ${width}%"></span>
+              </span>
+              <span class="analysis-letter-count">${count}</span>
+            </div>
+          `;
+        }).join("");
+      }
+
+      if (!words.length) {
+        analysisWordTableWrap.innerHTML = `<div class="record-empty">目前沒有錯誤輸入紀錄。</div>`;
+        return;
+      }
+
+      const body = words.map((row) => `
+        <tr>
+          <td><span class="record-char">${escapeHtml(row.char)}</span></td>
+          <td><span class="analysis-code">${escapeHtml(formatCodePair(row.expected))}</span></td>
+          <td>${row.wrong}</td>
+          <td>${escapeHtml(primaryMistakeType(row.types))}</td>
+        </tr>
+      `).join("");
+
+      analysisWordTableWrap.innerHTML = `
+        <table class="record-table analysis-table">
+          <thead>
+            <tr>
+              <th>中文字</th>
+              <th>正確編碼</th>
+              <th>錯誤次數</th>
+              <th>主要錯誤類型</th>
+            </tr>
+          </thead>
+          <tbody>${body}</tbody>
+        </table>
+      `;
+    }
+
     function setRecordPanel(open) {
       if (open) {
         renderRecordPanel();
         closeSettingsMenu();
+        closeAnalysisPanel();
         closeDictionaryPanel();
       }
 
@@ -3627,6 +4094,22 @@
 
     function closeRecordPanel() {
       setRecordPanel(false);
+    }
+
+    function setAnalysisPanel(open) {
+      if (open) {
+        renderAnalysisPanel();
+        closeSettingsMenu();
+        closeRecordPanel();
+        closeDictionaryPanel();
+      }
+
+      analysisPanel.classList.toggle("show", open);
+      analysisPanel.setAttribute("aria-hidden", open ? "false" : "true");
+    }
+
+    function closeAnalysisPanel() {
+      setAnalysisPanel(false);
     }
 
     function dictionaryModeLabel() {
@@ -3725,6 +4208,7 @@
       if (open) {
         closeSettingsMenu();
         closeRecordPanel();
+        closeAnalysisPanel();
         setDictionaryStatus("");
       }
 
@@ -3945,11 +4429,14 @@
       if (!confirmed) return;
 
       progress = { learned: {}, daily: {} };
+      analysisState = defaultAnalysis();
       score = 0;
       answered = 0;
       saveProgress();
+      saveAnalysis();
       closeSettingsMenu();
       closeRecordPanel();
+      closeAnalysisPanel();
       rebuildSession();
     }
 
@@ -4664,6 +5151,7 @@
       updateDeleteButton();
 
       const correct = buffer[0] === question.head && buffer[1] === question.tail;
+      recordInputAnalysis(question, [...buffer]);
       if (correct) {
         score += 1;
         answered += 1;
@@ -4700,6 +5188,7 @@
       if (reason === "hint" && !currentRecorded) {
         answered += 1;
         currentRecorded = true;
+        recordSkippedAnalysis(question);
         recordAnswer(question, false, true);
         updateScore();
       }
@@ -4781,6 +5270,11 @@
       setRecordPanel(true);
     });
 
+    analysisButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setAnalysisPanel(true);
+    });
+
     editDictionaryButton.addEventListener("click", (event) => {
       event.stopPropagation();
       setDictionaryPanel(true);
@@ -4793,6 +5287,14 @@
     });
 
     recordCloseButton.addEventListener("click", closeRecordPanel);
+
+    analysisPanel.addEventListener("click", closeAnalysisPanel);
+
+    analysisPanel.querySelector(".analysis-sheet").addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    analysisCloseButton.addEventListener("click", closeAnalysisPanel);
 
     dictionaryPanel.addEventListener("click", closeDictionaryPanel);
 
@@ -4834,12 +5336,16 @@
       renderRecordPanel();
     });
 
-    dailyLimitSelect.addEventListener("change", () => {
-      settings.dailyLimit = Number(dailyLimitSelect.value) || 10;
-      saveSettings();
-      trimTodayIntroducedToLimit();
-      closeSettingsMenu();
-      rebuildSession();
+    dailyLimitButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const nextLimit = normalizeDailyLimit(button.dataset.dailyLimit);
+        if (settings.dailyLimit === nextLimit) return;
+        settings.dailyLimit = nextLimit;
+        syncDailyLimitButtons();
+        saveSettings();
+        trimTodayIntroducedToLimit();
+        rebuildSession();
+      });
     });
 
     resetProgressButton.addEventListener("click", resetLearningProgress);
@@ -4900,6 +5406,7 @@
 
       if (event.key === "Escape") {
         closeRecordPanel();
+        closeAnalysisPanel();
         closeDictionaryPanel();
         closeSettingsMenu();
         hideKeyHint();
