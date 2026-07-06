@@ -364,12 +364,14 @@
       transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 180ms ease;
     }
 
-    .settings-switch:not(.is-random) .settings-switch-option:first-child,
-    .settings-switch.is-random .settings-switch-option:nth-child(2) {
+    .settings-switch:not(.is-random):not(.is-on) .settings-switch-option:first-child,
+    .settings-switch.is-random .settings-switch-option:nth-child(2),
+    .settings-switch.is-on .settings-switch-option:nth-child(2) {
       color: #ffffff;
     }
 
-    .settings-switch.is-random .settings-switch-thumb {
+    .settings-switch.is-random .settings-switch-thumb,
+    .settings-switch.is-on .settings-switch-thumb {
       transform: translateX(100%);
     }
 
@@ -1487,6 +1489,10 @@
       min-height: 58px;
     }
 
+    .buffer[data-slots="1"] {
+      grid-template-columns: 76px;
+    }
+
     .input-row {
       display: grid;
       grid-template-columns: auto;
@@ -1966,6 +1972,28 @@
       user-select: none;
     }
 
+    .key-alpha {
+      display: none;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+      pointer-events: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .keyboard.show-key-letters .key {
+      align-content: center;
+      gap: 2px;
+      padding: 4px 0 5px;
+    }
+
+    .keyboard.show-key-letters .key-alpha {
+      display: block;
+    }
+
     .key:active,
     .key.active,
     .key.holding {
@@ -1986,6 +2014,10 @@
       -webkit-touch-callout: none;
       -webkit-user-select: none;
       user-select: none;
+    }
+
+    .keyboard.show-key-letters .key-letter {
+      font-size: 18px;
     }
 
     .key-root {
@@ -2112,6 +2144,14 @@
         font-size: 19px;
       }
 
+      .keyboard.show-key-letters .key-alpha {
+        font-size: 9px;
+      }
+
+      .keyboard.show-key-letters .key-letter {
+        font-size: 16px;
+      }
+
       .key-delete-icon {
         width: 24px;
         height: 24px;
@@ -2136,7 +2176,7 @@
         <header class="topbar">
           <div class="title-block">
             <h1 class="logo-wordmark" aria-label="速成">
-              <img class="logo-image" src="logo-sucheng-03.png" alt="速成" width="516" height="229">
+              <img class="logo-image" src="assets/logo-sucheng-03.png" alt="速成" width="516" height="229">
             </h1>
           </div>
           <div class="top-actions">
@@ -2169,6 +2209,16 @@
                   <span class="settings-switch-track" aria-hidden="true">
                     <span class="settings-switch-option">字頻</span>
                     <span class="settings-switch-option">隨機</span>
+                    <span class="settings-switch-thumb"></span>
+                  </span>
+                </button>
+              </div>
+              <div class="settings-row">
+                <span>顯示字母</span>
+                <button id="keyLetterSwitch" class="settings-switch" type="button" role="switch" aria-checked="false" aria-label="切換鍵盤字母顯示">
+                  <span class="settings-switch-track" aria-hidden="true">
+                    <span class="settings-switch-option">關閉</span>
+                    <span class="settings-switch-option">開啟</span>
                     <span class="settings-switch-thumb"></span>
                   </span>
                 </button>
@@ -2912,6 +2962,7 @@
     const settingsMenu = document.getElementById("settingsMenu");
     const dailyLimitButtons = [...document.querySelectorAll("[data-daily-limit]")];
     const orderModeSwitch = document.getElementById("orderModeSwitch");
+    const keyLetterSwitch = document.getElementById("keyLetterSwitch");
     const recordButton = document.getElementById("recordButton");
     const analysisButton = document.getElementById("analysisButton");
     const editDictionaryButton = document.getElementById("editDictionaryButton");
@@ -2986,6 +3037,7 @@
 
     syncDailyLimitButtons();
     syncOrderModeButtons();
+    syncKeyLetterSetting();
 
     function todayKey(time = Date.now()) {
       const date = new Date(time);
@@ -3145,7 +3197,8 @@
       const orderMode = saved.orderMode === "random" ? "random" : "rank";
       return {
         dailyLimit: normalizeDailyLimit(saved.dailyLimit),
-        orderMode
+        orderMode,
+        showKeyLetters: saved.showKeyLetters === true
       };
     }
 
@@ -3312,6 +3365,14 @@
       orderModeSwitch.setAttribute("aria-label", random ? "目前隨機出字，點擊切換為字頻順序" : "目前字頻順序，點擊切換為隨機出字");
     }
 
+    function syncKeyLetterSetting() {
+      const enabled = settings.showKeyLetters === true;
+      keyLetterSwitch.classList.toggle("is-on", enabled);
+      keyLetterSwitch.setAttribute("aria-checked", enabled ? "true" : "false");
+      keyLetterSwitch.setAttribute("aria-label", enabled ? "目前鍵盤顯示字母，點擊關閉" : "目前鍵盤不顯示字母，點擊開啟");
+      keyboardEl.classList.toggle("show-key-letters", enabled);
+    }
+
     function loadProgress() {
       const saved = safeJsonParse(storageGet(STORAGE_KEY), null);
       if (!saved || typeof saved !== "object") {
@@ -3347,6 +3408,7 @@
         head: String(item.actual?.head || item.input?.head || item.user?.head || "").toUpperCase(),
         tail: String(item.actual?.tail || item.input?.tail || item.user?.tail || "").toUpperCase()
       };
+      const inputLength = Number(item.inputLength || item.expectedLength || item.length || 2) === 1 ? 1 : 2;
       if (!char || !expected.head || !expected.tail) return null;
       if ((!actual.head || !actual.tail) && !skipped) return null;
 
@@ -3355,6 +3417,7 @@
         char,
         expected,
         actual,
+        inputLength,
         skipped,
         errorType: skipped ? "all" : classifyAnalysisAttempt(expected, actual)
       };
@@ -3390,17 +3453,21 @@
     }
 
     function recordInputAnalysis(question, actualLetters) {
-      if (!question || !Array.isArray(actualLetters) || actualLetters.length < 2) return;
+      const expectedLetters = expectedInputLetters(question);
+      if (!question || !Array.isArray(actualLetters) || actualLetters.length < expectedLetters.length) return;
       const expected = { head: question.head, tail: question.tail };
+      const singleCode = expectedLetters.length === 1;
+      const firstActual = String(actualLetters[0] || "").toUpperCase();
       const actual = {
-        head: String(actualLetters[0] || "").toUpperCase(),
-        tail: String(actualLetters[1] || "").toUpperCase()
+        head: firstActual,
+        tail: singleCode ? firstActual : String(actualLetters[1] || "").toUpperCase()
       };
       const attempt = normalizeAnalysisAttempt({
         time: Date.now(),
         char: question.char,
         expected,
-        actual
+        actual,
+        inputLength: expectedLetters.length
       });
       if (!attempt) return;
 
@@ -3416,6 +3483,7 @@
         char: question.char,
         expected: { head: question.head, tail: question.tail },
         actual: { head: "", tail: "" },
+        inputLength: expectedInputLength(question),
         skipped: true
       });
       if (!attempt) return;
@@ -3429,8 +3497,9 @@
       return analysisState.attempts.map(normalizeAnalysisAttempt).filter(Boolean);
     }
 
-    function formatCodePair(pair) {
+    function formatCodePair(pair, inputLength = 2) {
       if (!pair) return "";
+      if (inputLength === 1) return rootText(pair.head);
       return `${rootText(pair.head)} ${rootText(pair.tail)}`;
     }
 
@@ -3438,6 +3507,12 @@
       const counts = {};
       attempts.forEach((attempt) => {
         if (attempt.errorType === "correct") return;
+        if (attempt.inputLength === 1) {
+          if (attempt.actual.head !== attempt.expected.head && getMainRoot(attempt.expected.head)) {
+            counts[attempt.expected.head] = (counts[attempt.expected.head] || 0) + 1;
+          }
+          return;
+        }
         if (attempt.actual.head !== attempt.expected.head && getMainRoot(attempt.expected.head)) {
           counts[attempt.expected.head] = (counts[attempt.expected.head] || 0) + 1;
         }
@@ -3460,6 +3535,7 @@
           rows.set(attempt.char, {
             char: attempt.char,
             expected: attempt.expected,
+            inputLength: attempt.inputLength,
             wrong: 0,
             types: { head: 0, tail: 0, all: 0 }
           });
@@ -3739,6 +3815,39 @@
         return DICTIONARY[currentLearningCard.itemIndex] || null;
       }
       return Number.isInteger(order[index]) ? DICTIONARY[order[index]] : null;
+    }
+
+    function normalizedCodeLetter(letter) {
+      return String(letter || "").trim().toUpperCase();
+    }
+
+    function normalizedFullCode(code) {
+      return String(code || "").trim().toUpperCase().replace(/[^A-Z]/g, "");
+    }
+
+    function isSingleCodeQuestion(question) {
+      if (!question) return false;
+      const head = normalizedCodeLetter(question.head);
+      const tail = normalizedCodeLetter(question.tail);
+      if (!head || head !== tail) return false;
+
+      const fullCode = normalizedFullCode(question.code);
+      if (fullCode.length === 1 && fullCode === head) return true;
+
+      return rootText(head) === question.char;
+    }
+
+    function expectedInputLetters(question = currentQuestion()) {
+      if (!question) return [];
+      const head = normalizedCodeLetter(question.head);
+      const tail = normalizedCodeLetter(question.tail);
+      if (!head) return [];
+      if (isSingleCodeQuestion(question)) return [head];
+      return [head, tail].filter(Boolean);
+    }
+
+    function expectedInputLength(question = currentQuestion()) {
+      return expectedInputLetters(question).length || 2;
     }
 
     function isLearningCard() {
@@ -4059,7 +4168,7 @@
       const body = words.map((row) => `
         <tr>
           <td><span class="record-char">${escapeHtml(row.char)}</span></td>
-          <td><span class="analysis-code">${escapeHtml(formatCodePair(row.expected))}</span></td>
+          <td><span class="analysis-code">${escapeHtml(formatCodePair(row.expected, row.inputLength))}</span></td>
           <td>${row.wrong}</td>
           <td>${escapeHtml(primaryMistakeType(row.types))}</td>
         </tr>
@@ -4424,6 +4533,15 @@
       rebuildSession();
     }
 
+    function setShowKeyLetters(enabled) {
+      const nextValue = enabled === true;
+      if (settings.showKeyLetters === nextValue) return;
+
+      settings.showKeyLetters = nextValue;
+      saveSettings();
+      syncKeyLetterSetting();
+    }
+
     function resetLearningProgress() {
       const confirmed = window.confirm("確定要重設所有學習紀錄？");
       if (!confirmed) return;
@@ -4718,13 +4836,17 @@
     }
 
     function answerCard(role, label, question) {
-      const part = question.decomposition?.parts?.find((item) => item.role === role);
-      const letter = part?.letter || (role === "head" ? question.head : question.tail);
+      const singleCode = role === "single";
+      const part = singleCode
+        ? question.decomposition?.parts?.find((item) => item.role === "head") || question.decomposition?.parts?.[0]
+        : question.decomposition?.parts?.find((item) => item.role === role);
+      const letter = part?.letter || (singleCode ? expectedInputLetters(question)[0] : role === "head" ? question.head : question.tail);
       const root = rootText(letter);
       const cardImage = auxiliaryCardMarkup(letter, "answer-card-img", `${root} ${letter} 輔助字型卡`);
+      const labelText = singleCode ? `單碼 ${letter}` : `${label}碼 ${letter}`;
       return `
-        <div class="answer-card ${role}">
-          <div class="answer-label">${label}碼 ${letter} · ${part?.auxText || root}</div>
+        <div class="answer-card ${singleCode ? "head" : role}">
+          <div class="answer-label">${labelText} · ${part?.auxText || root}</div>
           <div class="answer-card-img-wrap">
             ${cardImage || `<div class="answer-card-fallback">${root}：重碼鍵</div>`}
           </div>
@@ -4963,7 +5085,10 @@
           key.dataset.key = letter;
           if (mainRoot?.id) key.dataset.id = mainRoot.id;
           key.setAttribute("aria-label", rootLabel(letter));
-          key.innerHTML = `<span class="key-letter" data-id="${mainRoot?.id || ""}">${rootText(letter)}</span>`;
+          key.innerHTML = `
+            <span class="key-alpha">${letter}</span>
+            <span class="key-letter" data-id="${mainRoot?.id || ""}">${rootText(letter)}</span>
+          `;
           key.addEventListener("pointerdown", (event) => {
             event.preventDefault();
             startKeyPress(letter, key);
@@ -5017,8 +5142,10 @@
 
     function renderBuffer(markBad = false) {
       bufferEl.innerHTML = "";
+      const slotCount = expectedInputLength();
+      bufferEl.dataset.slots = String(slotCount);
 
-      [0, 1].forEach((slotIndex) => {
+      Array.from({ length: slotCount }).forEach((_, slotIndex) => {
         const slot = document.createElement("div");
         const letter = buffer[slotIndex];
         slot.className = "slot";
@@ -5128,7 +5255,8 @@
 
     function pressKey(letter) {
       if (searchModeActive) return;
-      if (locked || buffer.length >= 2) return;
+      const requiredLength = expectedInputLength();
+      if (locked || buffer.length >= requiredLength) return;
 
       const keyEl = document.querySelector(`[data-key="${letter}"]`);
       if (keyEl && !keyEl.classList.contains("active")) {
@@ -5139,18 +5267,20 @@
       buffer.push(letter);
       renderBuffer();
 
-      if (buffer.length === 2) {
+      if (buffer.length === requiredLength) {
         checkAnswer();
       }
     }
 
     function checkAnswer() {
       const question = currentQuestion();
+      if (!question) return;
+      const expectedLetters = expectedInputLetters(question);
       locked = true;
       hintButton.disabled = true;
       updateDeleteButton();
 
-      const correct = buffer[0] === question.head && buffer[1] === question.tail;
+      const correct = expectedLetters.length > 0 && expectedLetters.every((letter, index) => buffer[index] === letter);
       recordInputAnalysis(question, [...buffer]);
       if (correct) {
         score += 1;
@@ -5196,11 +5326,16 @@
       wordEl.classList.remove("entering", "correct");
       restartClass(wordEl, "shake");
 
-      answerLine.innerHTML = `
-        ${answerCard("head", "頭", question)}
-        ${answerCard("tail", "尾", question)}
-      `;
-      answerLine.classList.add("show");
+      if (isSingleCodeQuestion(question)) {
+        answerLine.innerHTML = answerCard("single", "單", question);
+        answerLine.classList.add("show", "single");
+      } else {
+        answerLine.innerHTML = `
+          ${answerCard("head", "頭", question)}
+          ${answerCard("tail", "尾", question)}
+        `;
+        answerLine.classList.add("show");
+      }
       heroEl.classList.add("answer-mode");
     }
 
@@ -5263,6 +5398,10 @@
 
     orderModeSwitch.addEventListener("click", () => {
       setOrderMode(settings.orderMode === "random" ? "rank" : "random");
+    });
+
+    keyLetterSwitch.addEventListener("click", () => {
+      setShowKeyLetters(!settings.showKeyLetters);
     });
 
     recordButton.addEventListener("click", (event) => {
